@@ -1,0 +1,22 @@
+{
+  "name": "lsq-bot",
+  "version": "1.0.0",
+  "description": "A Twitch queue-making bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/professor-l/lsq-bot.git"
+  },
+  "author": "Elle Nolan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/professor-l/lsq-bot/issues"
+  },
+  "homepage": "https://github.com/professor-l/lsq-bot#readme",
+  "dependencies": {
+    "tmi.js": "^1.2.1"
+  }
+}
