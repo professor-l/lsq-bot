@@ -3,12 +3,13 @@ class MatchQueue {
         this.queue = [];
         this.challenges = [];
         this.timeouts = [];
+        this.timeoutLength = 30000;
     }
 
     removeChallenge(index) {
 
         let c = this.challenges.splice(index, 1)[0];
-        clearTimeout(this.timeouts[0]);
+        clearTimeout(this.timeouts.splice(index, 1)[0])
         this.timeouts.shift();
 
         return "{}: Your challenge to {} was cancelled or has expired.".format(c[0], c[1]);
@@ -17,7 +18,6 @@ class MatchQueue {
     addChallenge(challenger, defender) {
 
         this.challenges.push([challenger, defender]);
-        this.timeouts.push(setTimeout(this.removeChallenge, 30000, 0))
 
         return "{}: You were challenged to a match by {}! You have 30 seconds to accept or decline, or the challenge will automatically time out.".format(defender, challenger);
     }
@@ -33,7 +33,12 @@ class MatchQueue {
     }
 
     list() {
-        let toReturn = "";
-
+        let finalList = "";
+        for (let i = 0; i < this.queue.length; i++) {
+            finalList += "{}. {} vs. {}. ".format(i + 1, this.queue[i][0], this.queue[i][1]);
+        }
+        return finalList;
     }
 }
+
+module.exports = MatchQueue;
