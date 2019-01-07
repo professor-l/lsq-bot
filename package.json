@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/professor-l/lsq-bot#readme",
   "dependencies": {
+    "http": "0.0.0",
     "tmi.js": "^1.2.1"
   }
 }
