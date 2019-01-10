@@ -1,8 +1,7 @@
 const tmi = require("tmi.js");
-let MatchQueue = new require("./match-queue")
 const http = require("http");
-
-let GlobalQueue = new MatchQueue();
+const fs = require("fs");
+const MatchQueue = new require("./match-queue")
 
 const channel = process.argv[2];
 
@@ -17,7 +16,7 @@ const options = {
     },
     identity: {
         username: "lsq_bot",
-        password: "oath:key"
+        password: fs.readFileSync("oathkey.txt");
     },
     channels: [channel]
 };
@@ -25,6 +24,12 @@ const options = {
 const client = new tmi.client(options);
 
 const helpString = "See https://github.com/professor-l/lsq-bot#readme for detailed instructions."
+
+
+
+let GlobalQueue = new MatchQueue();
+
+
 
 client.connect();
 
