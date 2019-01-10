@@ -12,7 +12,8 @@ LsQ Bot (short for Elle's Queue Bot) is a [queueing](https://xkcd.com/853/) bot 
     * `!accept <user>` (or `!acceptchallenge <user>`) - accepts user's challenge if such a challenge has been made, and adds the match to the queue.
     * `!decline <user>` (or `!declinechallenge <user>`) - declines user's challenge if such a challenge has been made.
     * `!cancel <user>` (or `!canclechallenge <user>`) - cancels challenge against user, if such a challenge has been made.
-    * `!forfeit <user>` (or `!forfeitmatch <user>`) - forefits your match against user, if such a match has been scheduled.
+    * `!forfeit <user>` (or `!forfeitmatch <user>`) - forefits your match against user, if such a match has been scheduled. 
+    * `!queue` (or `!list`, `!matches`) - prints queue in order, numbered. If this is spammed, I will add a feature that only lets it be called every 15 seconds. Please be respectful.
 
   * Matchmaking
     * `!pb <user>` - Outputs the personal best score of user, if said user has set a PB.
@@ -21,6 +22,6 @@ LsQ Bot (short for Elle's Queue Bot) is a [queueing](https://xkcd.com/853/) bot 
 
 #### For moderators, the following commands also exist:
   * `!winner <user>` - Removes the match at number 1 in the queue (the current match at any given time), and declares user the winner in chat with a congratulatory message. Used at the end of matches.
-  * `!removechallenge <challenger, defender>` - Removes the challenge that challenger made to defender. Used at moderator's discretion.
-  * `!removematch <user1, user2>` - Removes the match between user1 and user2 from the queue, without declaring a winner. Used at moderator's discretion.
+  * `!removechallenge` - Removes a challenge from the current list of them. Used at moderator's discretion. Arguments are `<user1> <user2>` or `<index>` - either will work.
+  * `!removematch` (or `!kill`) - Removes a match from the queue, without declaring a winner. Used at moderator's discretion. Arguments are `<user1> <user2>` or `<index>` - either will work.
   
