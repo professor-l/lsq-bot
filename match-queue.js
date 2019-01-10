@@ -8,6 +8,8 @@ class MatchQueue {
     // Callback includes a setTimeout to remove it
     // Returns string to be printed to chat
     addChallenge(challenger, defender, callback) {
+        challenger = challenger.toLowerCase();
+        defender = defender.toLowerCase();
 
         // If challenge already exists, don't add it
         for (let i = 0; i < this.challenges.length; i++) {
@@ -18,15 +20,18 @@ class MatchQueue {
         }
 
         // Add the challenge
-        this.challenges.push(new Challenge(challenger, defender, callback));
+        this.challenges.push(new Challenge(challenger.toLowerCase(), defender.toLowerCase(), callback));
 
         // Return string
         return defender + ": " + challenger + " has challenged you to a match! You have 30 seconds to accept or decline their challenge.";
     }
 
     // Removes challenge between two users
-    // Reason is "timeout", "cancelled", or "accepted"
+    // Reason is "timeout", "cancelled", "declined", or "accepted"
     removeChallenge(user1, user2, reason) {
+        user1 = user1.toLowerCase();
+        user2 = user2.toLowerCase();
+
         // Get index of challenge in challenges array
         let index = -1;
 
@@ -51,15 +56,20 @@ class MatchQueue {
 
         // Return strings that correspond with reason
         if (reason == "timeout") 
-            return "The challenge between " + user1 + " and " + user2 + " has expired.";
+            return user1 + "'s challenge to " + user2 + " has expired.";
         if (reason == "cancelled")
-        return "The challenge between " + user1 + " and " + user2 + " has been cancelled.";
-        if (reason == "accepted")
-            return 0;
+            return user1 + " has cancelled their challenge to " + user2 + ".";
+        if (reason == "declined")
+            return user1 + ": " + user2 + " declined your challenge.";
+        if (reason == "removed")
+            return "A moderator has removed the challenge between " + user1 + " and " + user2 + ".";
     }
 
     // Add match between two players
     addMatch(challenger, defender) {
+        challenger = challenger.toLowerCase();
+        defender = defender.toLowerCase();
+
         let challengeExists = false;
         for (let i = 0; i < this.challenges.length; i++) {
             if (this.challenges[i].challenger == challenger &&
@@ -71,30 +81,43 @@ class MatchQueue {
         if (!challengeExists)
             return defender + ": No challenge has been made to you from " + challenger + ".";
 
-        this.queue.push(new Match(challenger, defender));
+        this.queue.push(new Match(challenger.toLowerCase(), defender.toLowerCase()));
         return defender + " has accepted " + challenger + "'s challenge! Match queued in spot " + this.queue.length + ".";
     }
 
-    removeMatch(challenger, defender) {
+    removeMatch(user1, user2, reason) {
+
+        user1 = user1.toLowerCase();
+        user2 = user2.toLowerCase();
+
         let index = -1;
 
-        for (let i = 0; i < this.challenges.length; i++) {
-            if (this.queue[i].challenger == challenger &&
-                this.queue[i].defender == defender) {
+        for (let i = 0; i < this.queue.length; i++) {
+            if ((this.queue[i].challenger == user1 &&
+                this.queue[i].defender == user2) || (this.queue[i].challenger == user2 && this.queue[i].defender == user1)) {
                     index = i;
                     break;
             }
         }
 
         if (index == -1) {
-            return challenger + " has no match scheduled against " + defender + ".";
-        }
+            if (reason == "forfeit")
+                return user1 + ": Yoou have no match scheduled against " + user2 + ".";
 
+            return user1 + " has no match scheduled against " + user2 + ".";
+        }
+        
         let m = this.queue.splice(index, 1)[0];
-        return "The match between " + challenger + " and " + defender + " has been cancelled!. New queue: " + this.listQueue();
+
+        if (reason == "forfeit")
+            return user1 + " forfeited in their match against " + user2 + "!";
+
+        return "The match between " + user1 + " and " + user2 + " has been cancelled. New queue: " + this.listQueue();
     }
 
     matchCompleted(winner) {
+        winner = winner.toLowerCase();
+        
         let match = this.queue.shift();
         if (match.challenger != winner && match.defender != winner) {
             return 0;
@@ -108,7 +131,7 @@ class MatchQueue {
         for (let i = 0; i < this.queue.length; i++) {
             f += (i + 1) + ". " + this.queue[i].challenger + " vs. " + this.queue[i].defender + ". ";
         }
-        return (f == "" ? 0 : f);
+        return (f == "" ? "No current queue." : f);
     }
 }
 

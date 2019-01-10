@@ -4,18 +4,7 @@ const http = require("http");
 
 let GlobalQueue = new MatchQueue();
 
-let channel;
-if (process.argv.length == 2)
-    channel = "MonthlyTetris";
-
-else if (process.argv[2] == "test") {
-    channel = "Professor_L_Tetris";
-}
-
-else {
-    console.log("Only value command-line argument is \"test\".");
-    process.exit();
-}
+const channel = process.argv[2];
 
 // Options 
 const options = {
@@ -28,7 +17,7 @@ const options = {
     },
     identity: {
         username: "lsq_bot",
-        password: "oauth:ot5xe5agofx0nfa4kxl5l10vboncqm"
+        password: "oath:key"
     },
     channels: [channel]
 };
@@ -74,6 +63,48 @@ function acceptedCommand(challenger, defender) {
     );
 }
 
+function declinedCommand(challenger, defender) {
+    ifUserExists(challenger,
+        () => {
+            client.action(channel, 
+                GlobalQueue.removeChallenge(challenger, defender, "declined")
+            );
+        },
+
+        () => {
+            client.action(channel, defender + ": user \"" + challenger + "\" is not in chat.");
+        }
+    );
+}
+
+function cancelledCommand(challenger, defender) {
+    ifUserExists(challenger,
+        () => {
+            client.action(channel, 
+                GlobalQueue.removeChallenge(challenger, defender, "cancelled")
+            );
+        },
+
+        () => {
+            client.action(channel, defender + ": user \"" + challenger + "\" is not in chat.");
+        }
+    );
+}
+
+function forfeittedCommand(forfeitter, user2) {
+    ifUserExists(user2,
+        () => {
+            client.action(channel, 
+                GlobalQueue.removeMatch(forfeitter, user2, "forfeit")
+            );
+        },
+
+        () => {
+            client.action(channel, forfeitter + ": user \"" + challenger + "\" is not in chat.");
+        }
+    );
+}
+
 client.on("chat", (chatChannel, user, message, self) => {
     if (message == "!help")
         client.action(channel, helpString);
@@ -95,9 +126,32 @@ client.on("chat", (chatChannel, user, message, self) => {
         acceptedCommand(challenger, defender);
     }
 
+    if (message.substring(0, 9) == "!decline " || message.substring(0, 18) == "!declinechallenge ") {
+
+        let defender = user["display-name"];
+        let challenger = message.substring(message.indexOf(" ") + 1);
+
+        declinedCommand(challenger, defender);
+    }
+
+    if (message.substring(0, 8) == "!cancel " || message.substring(0, 17) == "!cancelchallenge ") {
+
+        let defender = user["display-name"];
+        let challenger = message.substring(message.indexOf(" ") + 1);
+
+        cancelledCommand(challenger, defender);
+    }
+
+    if (message.substring(0, 9) == "!forfeit " || message.substring(0, 14) == "!forfeitmatch ") {
+        
+        let forfeitter = user["display-name"];
+        let user2 = message.substring(message.indexOf(" ") + 1);
+
+        forfeittedCommand(forfeitter, user2);
+    }
+
     if (message == "!queue") {
-        let a = GlobalQueue.listQueue();
-        if (a) client.action(channel, a);
+        client.action(channel, GlobalQueue.listQueue());
     }
 
 });
