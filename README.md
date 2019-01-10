@@ -11,7 +11,7 @@ LsQ Bot (short for Elle's Queue Bot) is a [queueing](https://xkcd.com/853/) bot 
     * `!challenge <user>`- challenges the user to a match, if such a user exists, you have not yet challenged them, and no match between you and the user is already in the queue. Challenge expires after 30 seconds.
     * `!accept <user>` (or `!acceptchallenge <user>`) - accepts user's challenge if such a challenge has been made, and adds the match to the queue.
     * `!decline <user>` (or `!declinechallenge <user>`) - declines user's challenge if such a challenge has been made.
-    * `!cancel <user>` (or `!canclechallenge <user>`) - cancels challenge against user, if such a challenge has been made.
+    * `!cancel <user>` (or `!cancelchallenge <user>`) - cancels challenge against user, if such a challenge has been made.
     * `!forfeit <user>` (or `!forfeitmatch <user>`) - forefits your match against user, if such a match has been scheduled. 
     * `!queue` (or `!list`, `!matches`) - prints queue in order, numbered. If this is spammed, I will add a feature that only lets it be called every 15 seconds. Please be respectful.
 
