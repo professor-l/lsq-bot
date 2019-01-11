@@ -15,7 +15,7 @@ class MatchQueue {
         for (let i = 0; i < this.challenges.length; i++) {
             if (this.challenges[i].challenger == challenger &&
                 this.challenges[i].defender == defender) {
-                    return "{}: You have already challenged {} to a match!"
+                    return challenger + ": You have already challenged " + defender + " to a match!"
             }
         }
 
@@ -117,7 +117,7 @@ class MatchQueue {
 
     matchCompleted(winner) {
         winner = winner.toLowerCase();
-        
+
         let match = this.queue.shift();
         if (match.challenger != winner && match.defender != winner) {
             return 0;

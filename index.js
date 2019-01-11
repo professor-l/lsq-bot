@@ -16,7 +16,7 @@ const options = {
     },
     identity: {
         username: "lsq_bot",
-        password: fs.readFileSync("oathkey.txt");
+        password: fs.readFileSync("oathkey.txt", "utf8")
     },
     channels: [channel]
 };
