@@ -5,5 +5,5 @@ package-lock.json
 // MacOS
 .DS_Store
 
-// oath key
-oathkey.txt
+// Input files
+input_files/

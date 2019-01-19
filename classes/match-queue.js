@@ -67,9 +67,12 @@ class MatchQueue {
 
     // Add match between two players
     addMatch(challenger, defender) {
+
+        // Lowercase to compare with user array
         challenger = challenger.toLowerCase();
         defender = defender.toLowerCase();
 
+        // Make sure challenge exists
         let challengeExists = false;
         for (let i = 0; i < this.challenges.length; i++) {
             if (this.challenges[i].challenger == challenger &&
@@ -78,54 +81,72 @@ class MatchQueue {
                     break;
                 }
         }
+
+        // Return string if challenge doesn't exist
         if (!challengeExists)
             return defender + ": No challenge has been made to you from " + challenger + ".";
 
+        // Add match to queue, return string
         this.queue.push(new Match(challenger.toLowerCase(), defender.toLowerCase()));
         return defender + " has accepted " + challenger + "'s challenge! Match queued in spot " + this.queue.length + ".";
     }
 
+    // Removes match between two users
     removeMatch(user1, user2, reason) {
 
+        // Lowercase to compare with user array
         user1 = user1.toLowerCase();
         user2 = user2.toLowerCase();
 
+        // Set index of match in queue
         let index = -1;
 
         for (let i = 0; i < this.queue.length; i++) {
-            if ((this.queue[i].challenger == user1 &&
-                this.queue[i].defender == user2) || (this.queue[i].challenger == user2 && this.queue[i].defender == user1)) {
+            if ((this.queue[i].challenger == user1 && this.queue[i].defender == user2) || (this.queue[i].challenger == user2 && this.queue[i].defender == user1)) {
                     index = i;
                     break;
             }
         }
 
+        // Returns appropriate string if match doesn't exist
         if (index == -1) {
             if (reason == "forfeit")
-                return user1 + ": Yoou have no match scheduled against " + user2 + ".";
+                return user1 + ": You have no match scheduled against " + user2 + ".";
 
             return user1 + " has no match scheduled against " + user2 + ".";
         }
         
+        // Remove match from queue
         let m = this.queue.splice(index, 1)[0];
 
+        // Return appropriate string
         if (reason == "forfeit")
-            return user1 + " forfeited in their match against " + user2 + "!";
+            return user1 + " forfeited in their match against " + user2 + "! New queue: " + this.listQueue();
 
         return "The match between " + user1 + " and " + user2 + " has been cancelled. New queue: " + this.listQueue();
     }
 
+    // Removes match at first index in queue, declares winner
     matchCompleted(winner) {
+
+        // Lowercase to compare wtih user array
         winner = winner.toLowerCase();
 
+        // Remove first (current) match from queue
         let match = this.queue.shift();
-        if (match.challenger != winner && match.defender != winner) {
+        
+        // If winner is neither player, return 0
+        if (match.challenger != winner && match.defender != winner)
             return 0;
-        }
+
+        // Set loser
         let loser = (match.defender == winner ? match.challenger : match.defender);
+
+        // Return appropriate string
         return winner + " won their match against " + loser + "! Congratulations!";
     }
 
+    // List matches in queue, formatted.
     listQueue() {
         let f = "";
         for (let i = 0; i < this.queue.length; i++) {
@@ -135,6 +156,7 @@ class MatchQueue {
     }
 }
 
+// Challenge class, complete with timeout function
 class Challenge {
     constructor(challenger, defender, callback) {
         this.challenger = challenger;
@@ -143,6 +165,7 @@ class Challenge {
     }
 }
 
+// Match class
 class Match {
     constructor(challenger, defender) {
         this.challenger = challenger;
@@ -150,4 +173,5 @@ class Match {
     }
 }
 
+// Export MatchQueue class
 module.exports = MatchQueue;

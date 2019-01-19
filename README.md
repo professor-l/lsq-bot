@@ -21,8 +21,9 @@ LsQ Bot (short for Elle's Queue Bot) is a [queueing](https://xkcd.com/853/) bot 
     * `!match <user> <number>` - Prints out the players, currently present in chat, who have PBs closest to user's. The quantity of players printed is equal to number (maximum is 10).  Both arguments are optional - `user` defaults to you, `number` defaults to 3.
 
 #### For moderators, the following commands also exist (unimplemented):
-  * `!winner <user>` - Removes the match at number 1 in the queue (the current match at any given time), and declares user the winner in chat with a congratulatory message. Also adds result to statistics file. Used at the end of matches.
-  * `!addresult <winner> <loser>` - Adds result to statistics file without 
-  * `!removematch` (or `!kill`) - Removes a match from the queue, without declaring a winner. Used at moderator's discretion. Arguments are `<user1> <user2>` or `<index>` - either will work.
-  * `!clear <user>` (or `!clearqueue <user>`) - Clears all matches in which user is a participant. If no user is specified, clears the entire queue, so be careful!
+  * `!winner <user>` - Removes the match at number 1 in the queue (the current match at any given time), and declares user the winner in chat with a congratulatory message. Also adds result to the statistics file. Used at the end of matches.
+  * `!addresult <winner> <loser>` - Adds inputted result to the statistics file. Used for matches not in queue.
+  * `!removematch <index>` (or `!kill <index>`) - Removes a match from the queue at the given index, without declaring a winner. Used at moderator's discretion.
+  * `!add <user1> <user2> <index>` (or `!addmatch`) (unimplemented) - Adds a match between user1 and user2 at the inputted index in the queue. This command may, for instance, be used for impromptu matches between top players.
+  * `!clear <user>` (or `!clearqueue <user>`) (unimplemented) - Clears all matches in which user is a participant. If no user is specified, clears the entire queue, so be careful!
   
