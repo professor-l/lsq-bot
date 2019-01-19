@@ -20,7 +20,7 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
     * `!newpb <pb>` (or `!setpb <pb>`) - Sets a new personal best for you.
     * `!match <user> <number>` - Prints out the players, currently present in chat, who have PBs closest to user's. The quantity of players printed is equal to number (maximum is 10).  Both arguments are optional - `user` defaults to you, `number` defaults to 3.
 
-#### For moderators, the following commands also exist (unimplemented):
+#### For moderators, the following commands also exist:
   * `!winner <user>` - Removes the match at number 1 in the queue (the current match at any given time), and declares user the winner in chat with a congratulatory message. Also adds result to the statistics file. Used at the end of matches.
   * `!addresult <winner> <loser>` - Adds inputted result to the statistics file. Used for matches not in queue.
   * `!removematch <index>` (or `!kill <index>`) - Removes a match from the queue at the given index, without declaring a winner. Used at moderator's discretion.
