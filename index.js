@@ -151,14 +151,14 @@ function forfeittedCommand(forfeitter, user2) {
 }
 
 
-
+// Congratulate and notify chat that database is unimplemented
 function won(u1, u2) {
     client.action(users[0] + " wins their match against " + users[1] + "! " + congratsMessage());
     unimplemented();
 }
 
 function winnerCommand(winner) {
-    ifUserExists(winner,
+    UserChecker.exists(winner,
         
         () => {
             let d = GlobalQueue.queue[0].defender;
@@ -189,9 +189,38 @@ function removeCommand(index) {
     if (index > GlobalQueue.queue.length)
         return;
     
+    // Remove matches
     let c = GlobalQueue.queue[index].challenger;
     let d = GlobalQueue.queue[index].defender;
     client.action(channel, GlobalQueue.removeMatch(c, d, "cancel"));
+}
+
+function addAtIndexCommand(message) {
+
+    let arr = message.split(" ");
+    arr[2] = parseInt(arr[2]) - 1;
+
+    if (arr.length != 3 || arr[2] == NaN || arr[1] != NaN || arr[0] != NaN)
+        return 1;
+    
+    client.action(channel, GlobalQueue.addMatchAtIndex(arr[0], arr[1], arr[2]));
+
+}
+
+function clearAllCommand() {
+    GlobalQueue.queue = [];
+    client.action(channel, "You have exerted your power, and the queue has been cleared.");
+}
+
+function clearPlayerCommand(player) {
+    for (let i = 0; i < GlobalQueue.queue.length; i++) {
+        if (GlobalQueue.queue[i].defender == player || GlobalQueue.queue[i].challenger == player) {
+            GlobalQueue.queue.splice(i, 1);
+            i--;
+        }
+    }
+
+    client.action(channel, "All matches with player " + player + " removed. New queue: " + GlobalQueue.listQueue());
 }
 
 client.on("chat", (chatChannel, user, message, self) => {
@@ -268,6 +297,12 @@ client.on("chat", (chatChannel, user, message, self) => {
                 if (message.substring(0, 6) == "!kill " || message.substring(0, 13) == "!removematch ")
                     removeCommand(parseInt(message.substring(message.indexOf(" ") + 1)));
                 
+                if (message.substring(0, 5) == "!add " || message.substring(0, 10) == "!addmatch ")
+                    addAtIndexCommand(message.substring(message.indexOf(" ") + 1));
+                
+                if (message == "!clear")
+                    clearAllCommand();
+                
             },
 
             () => {
@@ -280,6 +315,6 @@ client.on("chat", (chatChannel, user, message, self) => {
 
 function unimplemented() {
     setTimeout(() => {
-        client.action(channel, "Databse feature unimplemented. Result not saved.");
+        client.action(channel, "Databse feature unimplemented. No results or personal bests can be saved at this time.");
     }, 1001);
 }

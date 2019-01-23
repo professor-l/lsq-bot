@@ -91,6 +91,18 @@ class MatchQueue {
         return defender + " has accepted " + challenger + "'s challenge! Match queued in spot " + this.queue.length + ".";
     }
 
+    addMatchAtIndex(challenger, defender, index) {
+        
+        // Lowercase to compare with user array
+        challenger = challenger.toLowerCase();
+        defender = defender.toLowerCase();
+
+        this.queue.splice(index, 0, new Match(challenger, defender));
+
+        return "Match added at index " + index + " between " + challenger + " and " + defender + ". New queue: " + this.listQueue();
+
+    }
+
     // Removes match between two users
     removeMatch(user1, user2, reason) {
 
