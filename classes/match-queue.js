@@ -99,7 +99,7 @@ class MatchQueue {
 
         this.queue.splice(index, 0, new Match(challenger, defender));
 
-        return "Match added at index " + index + " between " + challenger + " and " + defender + ". New queue: " + this.listQueue();
+        return "Match added at index " + (index + 1) + " between " + challenger + " and " + defender + ". New queue: " + this.listQueue();
 
     }
 
@@ -139,23 +139,16 @@ class MatchQueue {
     }
 
     // Removes match at first index in queue, declares winner
-    matchCompleted(winner) {
+    matchCompleted(winner, loser) {
 
         // Lowercase to compare wtih user array
         winner = winner.toLowerCase();
 
         // Remove first (current) match from queue
         let match = this.queue.shift();
-        
-        // If winner is neither player, return 0
-        if (match.challenger != winner && match.defender != winner)
-            return 0;
-
-        // Set loser
-        let loser = (match.defender == winner ? match.challenger : match.defender);
 
         // Return appropriate string
-        return winner + " won their match against " + loser + "! Congratulations!";
+        return winner + " won their match against " + loser + "! " + this.congratsMessage();
     }
 
     // List matches in queue, formatted.
@@ -165,6 +158,20 @@ class MatchQueue {
             f += (i + 1) + ". " + this.queue[i].challenger + " vs. " + this.queue[i].defender + ". ";
         }
         return (f == "" ? "No current queue." : f);
+    }
+
+
+
+    congratsMessage() {
+        let messages = [
+            "Congratulations!",
+            "Well done!",
+            "Great job!",
+            "You killed it!",
+            "You're awesome!",
+            "That one's in the books!",
+        ];
+        return messages[Math.floor(Math.random() * messages.length)];
     }
 }
 
