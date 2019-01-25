@@ -18,7 +18,7 @@ class UserChecker {
                 let d = JSON.parse(data).chatters;
                 let allUsers = d.vips.concat(d.moderators).concat(d.staff).concat(d.admins).concat(d.gloabl_mods).concat(d.viewers);
 
-                if (allUsers.indexOf(username.toLowerCase()) -1) {
+                if (allUsers.indexOf(username.toLowerCase()) != -1) {
                     ifTrue();
                     return 1;
                 }

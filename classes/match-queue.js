@@ -97,6 +97,9 @@ class MatchQueue {
         challenger = challenger.toLowerCase();
         defender = defender.toLowerCase();
 
+        if (challenger == defender)
+            return "Matches need to be between two different people, silly!";
+
         this.queue.splice(index, 0, new Match(challenger, defender));
 
         return "Match added at index " + (index + 1) + " between " + challenger + " and " + defender + ". New queue: " + this.listQueue();
@@ -155,7 +158,7 @@ class MatchQueue {
     listQueue() {
         let f = "";
         for (let i = 0; i < this.queue.length; i++) {
-            f += (i + 1) + ". " + this.queue[i].challenger + " vs. " + this.queue[i].defender + ". ";
+            f += (i + 1) + ". " + this.queue[i].challenger + " vs. " + this.queue[i].defender + " ";
         }
         return (f == "" ? "No current queue." : f);
     }

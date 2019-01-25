@@ -56,6 +56,9 @@ client.on("connected", (address, port) => {
 
 function challengeCommand(challenger, defender) {
     // If defender exists, add challenge between them
+    if (challenger == defender) {
+        client.say(channel, "You can't challenge yourself, silly!");
+    }
     Check.exists(defender, 
         () => {
             client.say(channel, 
@@ -147,6 +150,9 @@ function won(winner, loser) {
 
 function winnerCommand(winner) {
         
+    if (!GlobalQueue.queue.length) 
+        return; 
+
     let d = GlobalQueue.queue[0].defender;
     let c = GlobalQueue.queue[0].challenger;
 
@@ -183,6 +189,9 @@ function addAtIndexCommand(message) {
         return;
     
     arr[2] = parseInt(arr[2]) - 1;
+    if (arr[2] < 0 || arr[2] > GlobalQueue.queue.length) {
+        client.say("Invalid index. Cannot add ")
+    }
     
     client.say(channel, GlobalQueue.addMatchAtIndex(arr[0], arr[1], arr[2]));
 
@@ -214,19 +223,19 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     let ch = chatChannel.substring(1);
 
-    if (ch != channel) {
+    // if (ch != channel) {
 
-        if (message.substring(0, 4) == "!pb ")
-            unimplemented();
+    //     if (message.substring(0, 4) == "!pb ")
+    //         unimplemented();
         
-        if (message.substring(0, 7) == "!newpb ")
-            unimplemented();
+    //     if (message.substring(0, 7) == "!newpb ")
+    //         unimplemented();
         
-        if (message.substring(0, 7) == "!match ")
-            unimplemented();
+    //     if (message.substring(0, 7) == "!match ")
+    //         unimplemented();
 
-        return;
-    }
+    //     return;
+    // }
 
     // Display help message
     if (message == "!help")
@@ -260,8 +269,8 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     else if (message.substring(0, 8) == "!cancel " || message.substring(0, 17) == "!cancelchallenge ") {
 
-        let defender = user["display-name"];
-        let challenger = message.substring(message.indexOf(" ") + 1);
+        let challenger = user["display-name"];
+        let defender = message.substring(message.indexOf(" ") + 1);
 
         cancelledCommand(challenger, defender);
     }
@@ -278,40 +287,86 @@ client.on("chat", (chatChannel, user, message, self) => {
         client.say(channel, GlobalQueue.listQueue());
     }
 
-    else {
+    else if (message.substring(0, 8) == "!winner ") {
         Check.moderator(user["display-name"], 
-
+        
             () => {
-                if (message.substring(0, 8) == "!winner ") {
-                    winnerCommand(message.substring(8));
-                }
-
-                if (message.substring(0, 11) == "!addresult ") {
-
-                    let users = message.substring(11).trim().split(" ");
-
-                    if (users.length == 2) {
-                        won(users[0], users[1]);
-                    }
-                }
-
-                if (message.substring(0, 6) == "!kill " || message.substring(0, 13) == "!removematch ")
-                    removeCommand(parseInt(message.substring(message.indexOf(" ") + 1)));
-                
-                if (message.substring(0, 5) == "!add " || message.substring(0, 10) == "!addmatch ")
-                    addAtIndexCommand(message.substring(message.indexOf(" ") + 1));
-                
-                if (message == "!clear")
-                    clearAllCommand();
-                
-                else if (message.substring(0, 7) == "!clear ") {
-                    clearPlayerCommand(message.substring(7));
-                }
+                winnerCommand(message.substring(8));
             },
 
             () => {
-                client.say(channel, user["display-name"] + ": You are not a moderator.");
+                client.say(channel, user["display-name"] + ": you are not a moderator.");
             }
+        );
+    }
+
+    else if (message.substring(0, 11) == "!addresult ") {
+        Check.moderator(user["display-name"], 
+        
+            () => {
+                let users = message.substring(11).trim().split(" ");
+                if (users.length == 2)
+                    won(users[0], users[1]);
+            },
+
+            () => {
+                client.say(channel, user["display-name"] + ": you are not a moderator.");
+            }
+            
+        );
+    }
+
+    else if (message.substring(0, 6) == "!kill " || message.substring(0, 13) == "!removematch ") {
+        Check.moderator(user["display-name"], 
+        
+            () => {
+                removeCommand(parseInt(message.substring(message.indexOf(" ") + 1)));
+            },
+
+            () => {
+                client.say(channel, user["display-name"] + ": you are not a moderator.");
+            }
+            
+        );
+    }
+
+    else if (message.substring(0, 5) == "!add " || message.substring(0, 10) == "!addmatch ") {
+        Check.moderator(user["display-name"], 
+        
+            () => {
+                addAtIndexCommand(message.substring(message.indexOf(" ") + 1));
+            },
+
+            () => {
+                client.say(channel, user["display-name"] + ": you are not a moderator.");
+            }
+            
+        );
+    }
+
+    else if (message.substring(0, 7) == "!clear ") {
+        Check.moderator(user["display-name"], 
+        
+            () => {
+                clearPlayerCommand(message.substring(7));
+            },
+
+            () => {
+                client.say(channel, user["display-name"] + ": you are not a moderator.");
+            }
+            
+        );
+    }
+
+    else if (message == "!clear") {
+        Check.moderator(user["display-name"],
+        
+            clearAllCommand,
+
+            () => {
+                client.say(channel, user["display-name"] + ": you are not a moderator.");
+            }
+        
         );
     }
 
