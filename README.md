@@ -30,4 +30,12 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
   
 ## For developers
 
-If you intend to use this bot yourself, there are a few steps you need to take. It requires the installation of [Node.js](https://nodejs.org/) Once you have cloned this repository to your local machine, navigate to it in your terminal and run `npm install`.
+If you intend to use this bot yourself, there are a few steps you need to take. It requires the installation of [Node.js](https://nodejs.org/). Once you have cloned this repository to your machine, navigate to the home directory in your terminal and run `npm install`. This will install the necessary packages to communicate with the Twitch chat.
+
+Next, you must create a folder in the lsq-bot directory called `input-files`. Inside that folder, create `channels.txt` and `oathkey.txt`. `channels.txt` will have a comma-separated list of all the channels to include in your bot. Note that the matchmaking commands are supported for **one channel only**, but the personal best tracking can be accessed from any channel in the `channels.txt` file. This is something I may fix in later versions, but for now it fits my needs and I don't have the time to change it at the moment. 
+
+In the `oathkey.txt` file, paste the oath key acquired from [this link](https://twitchapps.com/tmi/), making sure that you are signed in to the bot account on Twitch before you request the key. This will allow the bot to log into twitch and participate in chat.
+
+Finally, create a `db` directory in the `lsq-bot` home directory, and inside that create a `data.json` file. This is where personal bests and match results will be stored.
+
+The bot should be ready to go! To run, type `node index.js [channel]`, where `[channel]` is replaced by the main channel in which your bot will be running - the channel in which the queue will reside. Be sure to include that channel in `channels.txt`, or it won't work!
