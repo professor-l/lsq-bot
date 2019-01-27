@@ -2,10 +2,12 @@ const tmi = require("tmi.js");
 const http = require("http");
 const fs = require("fs");
 const MatchQueue = new require("./classes/match-queue");
-const UserChecker = new require("./classes/user-check");
+const UserChecker = new require("./classes/user-checker");
+const DataCommunicator = new require("./classes/data-communicator.js");
 
 // Main channel (only channel to accept queueing/moderator commands)
 const channel = process.argv[2];
+const botName = "lsq_bot";
 
 // Read comma-separated channels file
 // Split by commas
@@ -40,6 +42,7 @@ const client = new tmi.client(options);
 
 let GlobalQueue = new MatchQueue();
 let Check = new UserChecker(channel);
+let DB = new DataCommunicator("db/data.json", 60000);
 
 
 
@@ -54,11 +57,15 @@ client.on("connected", (address, port) => {
 });
 
 
+
 function challengeCommand(challenger, defender) {
-    // If defender exists, add challenge between them
+    
     if (challenger == defender) {
         client.say(channel, "You can't challenge yourself, silly!");
+        return;
     }
+
+    // If defender exists, add challenge between them
     Check.exists(defender, 
         () => {
             client.say(channel, 
@@ -145,7 +152,7 @@ function winnerCommand(winner) {
 
     // If winnerd
     if (winner != c && winner != d) {
-        client.say(channel, winner + " is not playing a match. Current match is between " + c + " and " + d + ".");
+        client.say(channel, winner + " is not playing a match. Current match is between " + c + " and " + d + " .");
         return;
     }
 
@@ -177,12 +184,17 @@ function addAtIndexCommand(message) {
     
     arr[2] = parseInt(arr[2]) - 1;
     if (arr[2] < 0 || arr[2] > GlobalQueue.queue.length) {
-        client.say("Invalid index. Cannot add ")
+        client.say(channel, "Invalid index. Cannot add ")
     }
    
     for (let i = 0; i < 2; i++) {
         if (arr[i][0] == "@")
             arr[i] = arr[i].substring(1);
+        
+        if (arr[i] == botName) {
+            client.say(channel, "I don't play matches!");
+            return;
+        }
     }
 
     client.say(channel, GlobalQueue.addMatchAtIndex(arr[0], arr[1], arr[2]));
@@ -215,23 +227,86 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     let ch = chatChannel.substring(1);
 
-    // if (ch != channel) {
+    if (message == "!pb") {
+        let u = user["display-name"].toLowerCase();
+        let pb = DB.getValue(u, "pb");
+        client.say(chatChannel, u + " has a personal best of " + pb + ".");
+    }
 
-    //     if (message.substring(0, 4) == "!pb ")
-    //         unimplemented();
-        
-    //     if (message.substring(0, 7) == "!newpb ")
-    //         unimplemented();
-        
-    //     if (message.substring(0, 7) == "!match ")
-    //         unimplemented();
+    else if (message.startsWith("!pb ")) {
+        let u = message.substring(4);
 
-    //     return;
-    // }
+        if (u.indexOf(" ") != -1)
+            return;
+        
+        let pb = DB.getValue(u, "pb") || 0;
+        if (pb)
+            client.say(chatChannel, u + " has a personal best of " + pb + ".");
+        else 
+            client.say(chatChannel, "User \"" + u + "\" has not saved a personal best.");
+
+    }
+    
+    else if (message.startsWith("!newpb ")) {
+        let newpb = parseInt(message.substring(7));
+        if (newpb != message.substring(7))
+            return;
+        
+        client.say(chatChannel, DB.addPB(user["display-name"].toLowerCase(), newpb));
+    }
+    
+    else if (message == "!match")
+        client.say(chatChannel, DB.match(user["display-name"].toLowerCase(), 3));
+    
+    else if (message.startsWith("!match ")) {
+        let after = message.substring(7).split(" ");
+        let u = user["display-name"].toLowerCase();
+        if (after.length > 2 || after.length == 0) 
+            return;
+        
+        if (after.length == 1) {
+            let arg = parseInt(after[0]);
+
+            if (arg != NaN) {
+                if (arg > 10) arg = 10;
+                client.say(chatChannel, DB.match(u, arg));
+                return;
+            }
+
+            if (!DB.getValue(u, "pb")) {
+                client.say(chatChannel, u + " : You haven't saved a pb!");
+                return;
+            }
+
+            client.say(chatChannel, DB.match(u));
+
+            return;
+        }
+
+        u = after[0];
+        n = parseInt(after[1]);
+
+        if (!DB.getValue(u, "pb")) {
+            client.say(chatChannel, "User \"" + u + "\" has not saved a pb.");
+        }
+
+        if (n == NaN)
+            return;
+        
+        client.say(chatChannel, DB.match(u, n));
+
+    }
+
+
 
     // Display help message
-    if (message == "!help")
-        client.say(channel, "See https://github.com/professor-l/lsq-bot#readme for detailed instructions.");
+    else if (message == "!help")
+        client.say(chatChannel, "See https://github.com/professor-l/lsq-bot#readme for detailed instructions.");
+    
+
+    
+    else if (ch != channel.toLowerCase())
+        return;
     
         
     else if (message.startsWith("!challenge ")) {    
@@ -240,6 +315,11 @@ client.on("chat", (chatChannel, user, message, self) => {
         let defender = message.substring(11);
         if (defender[0] == "@")
             defender = defender.substring(1);
+
+        if (defender == botName) {
+            client.say(channel, "You can't challenge me!");
+            return;
+        }
 
         challengeCommand(challenger, defender);
     }

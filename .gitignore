@@ -7,3 +7,6 @@ package-lock.json
 
 // Input files
 input_files/
+
+// stored JSON data
+classes/db/
