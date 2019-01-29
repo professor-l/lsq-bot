@@ -15,7 +15,7 @@ class MatchQueue {
         for (let i = 0; i < this.challenges.length; i++) {
             if (this.challenges[i].challenger == challenger &&
                 this.challenges[i].defender == defender) {
-                    return challenger + ": You have already challenged " + defender + " to a match!"
+                    return challenger + " : You have already challenged " + defender + " to a match!"
             }
         }
 
@@ -23,7 +23,7 @@ class MatchQueue {
         this.challenges.push(new Challenge(challenger.toLowerCase(), defender.toLowerCase(), callback));
 
         // Return string
-        return defender + ": " + challenger + " has challenged you to a match! You have 30 seconds to accept or decline their challenge.";
+        return defender + " : " + challenger + " has challenged you to a match! You have 30 seconds to accept or decline their challenge.";
     }
 
     // Removes challenge between two users
@@ -56,11 +56,11 @@ class MatchQueue {
 
         // Return strings that correspond with reason
         if (reason == "timeout") 
-            return user1 + "'s challenge to " + user2 + " has expired.";
+            return user1 + " 's challenge to " + user2 + " has expired.";
         if (reason == "cancelled")
             return user1 + " has cancelled their challenge to " + user2 + ".";
         if (reason == "declined")
-            return user1 + ": " + user2 + " declined your challenge.";
+            return user1 + " : " + user2 + " declined your challenge.";
         if (reason == "removed")
             return "A moderator has removed the challenge between " + user1 + " and " + user2 + ".";
     }
@@ -84,7 +84,7 @@ class MatchQueue {
 
         // Return string if challenge doesn't exist
         if (!challengeExists)
-            return defender + ": No challenge has been made to you from " + challenger + ".";
+            return defender +  " : No challenge has been made to you from " + challenger + ".";
 
         // Add match to queue, return string
         this.queue.push(new Match(challenger.toLowerCase(), defender.toLowerCase()));
@@ -126,7 +126,7 @@ class MatchQueue {
         // Returns appropriate string if match doesn't exist
         if (index == -1) {
             if (reason == "forfeit")
-                return user1 + ": You have no match scheduled against " + user2 + ".";
+                return user1 + " : You have no match scheduled against " + user2 + ".";
 
             return user1 + " has no match scheduled against " + user2 + ".";
         }

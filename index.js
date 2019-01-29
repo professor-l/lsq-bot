@@ -136,10 +136,11 @@ function forfeittedCommand(forfeitter, user2) {
 }
 
 
-// Congratulate and notify chat that database is unimplemented
+// Congratulate and add statistics
 function won(winner, loser) {
     client.say(channel, GlobalQueue.matchCompleted(winner, loser));
-    unimplemented();
+    DB.addWin(winner);
+    DB.addLoss(loser);
 }
 
 function winnerCommand(winner) {
@@ -179,17 +180,18 @@ function addAtIndexCommand(message) {
 
     let arr = message.trim().split(" ");
 
-    if (arr.length != 3 || parseInt(arr[2]) == NaN)
+    if (arr.length < 2 || arr.length > 3 || (arr.length == 3 && parseInt(arr[2]) == NaN))
         return;
     
-    arr[2] = parseInt(arr[2]) - 1;
-    if (arr[2] < 0 || arr[2] > GlobalQueue.queue.length) {
+    arr[2] = parseInt(arr[2]) - 1 || GlobalQueue.queue.length;
+
+    if (arr[2] < 0 || arr[2] > GlobalQueue.queue.length)
         client.say(channel, "Invalid index. Cannot add ")
-    }
    
     for (let i = 0; i < 2; i++) {
         if (arr[i][0] == "@")
             arr[i] = arr[i].substring(1);
+        arr[i] = arr[i].toLowerCase();
         
         if (arr[i] == botName) {
             client.say(channel, "I don't play matches!");
@@ -234,7 +236,8 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message.startsWith("!pb ")) {
-        let u = message.substring(4);
+        let u = message.substring(4).toLowerCase();
+        if (u[0] == "@") u = u.substring(1);
 
         if (u.indexOf(" ") != -1)
             return;
@@ -251,6 +254,9 @@ client.on("chat", (chatChannel, user, message, self) => {
         let newpb = parseInt(message.substring(7));
         if (newpb != message.substring(7))
             return;
+        
+        if (newpb < 0)
+            client.say("Your PB can't be negative, silly!");
         
         client.say(chatChannel, DB.addPB(user["display-name"].toLowerCase(), newpb));
     }
@@ -309,10 +315,10 @@ client.on("chat", (chatChannel, user, message, self) => {
         return;
     
         
-    else if (message.startsWith("!challenge ")) {    
+    else if (message.startsWith("!challenge ") || message.startsWith("!chal ")) {    
 
         let challenger = user["display-name"];
-        let defender = message.substring(11);
+        let defender = message.substring(message.indexOf(" ") + 1);
         if (defender[0] == "@")
             defender = defender.substring(1);
 
@@ -371,7 +377,7 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     else if (message.startsWith("!winner ")) {
 
-        let w = message.substring(8);
+        let w = message.substring(8).toLowerCase();
         if (w[0] == "@")
             w = w.substring(1);
 
@@ -394,7 +400,9 @@ client.on("chat", (chatChannel, user, message, self) => {
                 let users = message.substring(11).trim().split(" ");
                 if (users.length == 2) {
                     users = users.map((u) => {
+                        u = u.toLowerCase();
                         if (u[0] == "@") u = u.substring(1);
+                        return u;
                     });
                     won(users[0], users[1]);
                 }
@@ -461,6 +469,17 @@ client.on("chat", (chatChannel, user, message, self) => {
             }
         
         );
+    }
+
+    else if (message == "!shoutout" || message == "!so") {
+
+        if (!GlobalQueue.queue.length)
+            return;
+        
+        let c = GlobalQueue.queue[0].challenger;
+        let d = GlobalQueue.queue[0].defender;
+
+        client.say(channel, "Like the current match? Follow the players at https://www.twitch.tv/" + c + " and https://www.twitch.tv/" + d + " respectively. Good luck to them!");
     }
 
 });

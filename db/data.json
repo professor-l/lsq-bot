@@ -1,11 +1,26 @@
 {
-  "professor_l_tetris": {
-    "pb": 5,
+  "357920": {
+    "pb": 0,
     "wins": 0,
     "losses": 0
   },
-  "vandweller": {
-    "pb": 2,
+  "professor_l_tetris": {
+    "pb": 999999,
+    "wins": 0,
+    "losses": 1
+  },
+  "rainbowwphoenixx": {
+    "pb": 357920,
+    "wins": 1,
+    "losses": 0
+  },
+  "@rainbowwphoenixx": {
+    "pb": 0,
+    "wins": 0,
+    "losses": 0
+  },
+  "3.0": {
+    "pb": 0,
     "wins": 0,
     "losses": 0
   }

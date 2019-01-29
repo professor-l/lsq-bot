@@ -4,11 +4,9 @@ class DataCommunicator {
     constructor() {
 
         this.data = this.readData();
-        console.log(this.data);
         setInterval(() => {
             fs.writeFile("db/data.json", JSON.stringify(this.data, null, 2), (err) => {
                 if (err) throw err;
-                console.log("Database updated");
             });
         }, 60000);
     }

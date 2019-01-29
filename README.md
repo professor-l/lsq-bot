@@ -15,7 +15,7 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
     * `!forfeit <user>` (or `!forfeitmatch <user>`) - forefits your match against user, if such a match has been scheduled. 
     * `!queue` (or `!list`, `!matches`) - prints queue in order, numbered. If this is spammed, I will add a feature that only lets it be called every 15 seconds. Please be respectful.
 
-  * Matchmaking (unimplemented)
+  * Matchmaking
     * `!pb <user>` - Outputs the personal best score of user, if said user has set a PB.
     * `!newpb <pb>` (or `!setpb <pb>`) - Sets a new personal best for you.
     * `!match <user> <number>` - Prints out the players, currently present in chat, who have PBs closest to user's. The quantity of players printed is equal to number (maximum is 10).  Both arguments are optional - `user` defaults to you, `number` defaults to 3.
