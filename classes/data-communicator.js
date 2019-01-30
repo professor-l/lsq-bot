@@ -89,6 +89,21 @@ class DataCommunicator {
         return "Best matches for " + user + " are " + s;
 
     }
+
+    getRecord(user) {
+        if (!this.data[user])
+            return user + " has no wins or losses!";
+        
+        let w = this.data[user]["wins"];
+        let l = this.data[user]["losses"];
+        if (w == 0 && l == 0)
+            return user + " has no wins or losses!";
+        
+        let winSuffix = (w == 1) ? "" : "s";
+        let lossSuffix = (l == 1) ? "" : "es";
+        
+        return user + " has " + w + " win" + winSuffix + " and " + l + " loss" + lossSuffix + ". That's a win percentage of " + Math.round((w / (l + w)) * 100) / 100 + "%.";
+    }
 }
 
 module.exports = DataCommunicator;

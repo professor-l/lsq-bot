@@ -303,6 +303,22 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     }
 
+    else if (message == "!record")
+        client.say(chatChannel, DB.getRecord(user["display-name"].toLowerCase()));
+    
+    else if (message.startsWith("!record ")) {
+
+        let u = message.substring(message.indexOf(" ") + 1).toLowerCase();
+        if (u.indexOf(" ") != -1) return;
+        if (u[0] == "@") u = u.substring(1);
+
+        if (u == botName) {
+            client.say(chatChannel, "Oh, me? I've got 999999 wins and no losses. A real maxout!");
+            return;
+        }
+        
+        client.say(chatChannel, DB.getRecord(u));
+    }
 
 
     // Display help message
@@ -483,9 +499,3 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
 });
-
-function unimplemented() {
-    setTimeout(() => {
-        client.say(channel, "Databse feature unimplemented. No results or personal bests can be saved at this time.");
-    }, 1001);
-}
