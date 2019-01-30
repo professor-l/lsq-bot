@@ -239,7 +239,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         let u = message.substring(4).toLowerCase();
         if (u[0] == "@") u = u.substring(1);
 
-        if (u.indexOf(" ") != -1)
+        if (u.indexOf(" ") != -1 || parseInt(u))
             return;
         
         let pb = DB.getValue(u, "pb") || 0;

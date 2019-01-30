@@ -47,7 +47,7 @@ class DataCommunicator {
 
     getValue(user, variable) {
         if (!this.data[user]) 
-            this.addUser(user);
+            return 0;
 
         return this.data[user][variable];
     }

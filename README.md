@@ -19,6 +19,7 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
     * `!pb <user>` - Outputs the personal best score of user, if said user has set a PB.
     * `!newpb <pb>` (or `!setpb <pb>`) - Sets a new personal best for you.
     * `!match <user> <number>` - Prints out the players, currently present in chat, who have PBs closest to user's. The quantity of players printed is equal to number (maximum is 10).  Both arguments are optional - `user` defaults to you, `number` defaults to 3.
+    * `!record <user>` - Prints out the user's record and win percentage. If no user is specified, defaults to you.
 
 #### For moderators, the following commands also exist:
 
@@ -27,11 +28,7 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
   * `!removematch <index>` (or `!kill <index>`) - Removes a match from the queue at the given index, without declaring a winner. Used at moderator's discretion.
   * `!add <user1> <user2> <index>` (or `!addmatch`) - Adds a match between user1 and user2 at the inputted index in the queue. This command may, for instance, be used for impromptu matches between top players.
   * `!clear <user>` (or `!clearqueue <user>`) - Clears all matches in which user is a participant. If no user is specified, clears the entire queue, so be careful!
-
-#### To add:
-
-  * `!shoutout`/`!so`
-  * Remove index requirement from `!add`/`!addmatch`
+  * `!shoutout` (or `!so`) - Gives a shoutout to the players of the current match, linking their Twitch channels.
   
 ## For developers
 
