@@ -191,7 +191,6 @@ function addAtIndexCommand(message) {
     for (let i = 0; i < 2; i++) {
         if (arr[i][0] == "@")
             arr[i] = arr[i].substring(1);
-        arr[i] = arr[i].toLowerCase();
         
         if (arr[i] == botName) {
             client.say(channel, "I don't play matches!");
@@ -227,16 +226,19 @@ function clearPlayerCommand(player) {
 
 client.on("chat", (chatChannel, user, message, self) => {
 
+    user["display-name"] = user["display-name"].toLowerCase();
+    message = message.toLowerCase();
+
     let ch = chatChannel.substring(1);
 
     if (message == "!pb") {
-        let u = user["display-name"].toLowerCase();
+        let u = user["display-name"];
         let pb = DB.getValue(u, "pb");
         client.say(chatChannel, u + " has a personal best of " + pb + ".");
     }
 
     else if (message.startsWith("!pb ")) {
-        let u = message.substring(4).toLowerCase();
+        let u = message.substring(4);
         if (u[0] == "@") u = u.substring(1);
 
         if (u.indexOf(" ") != -1 || parseInt(u))
@@ -258,15 +260,15 @@ client.on("chat", (chatChannel, user, message, self) => {
         if (newpb < 0)
             client.say("Your PB can't be negative, silly!");
         
-        client.say(chatChannel, DB.addPB(user["display-name"].toLowerCase(), newpb));
+        client.say(chatChannel, DB.addPB(user["display-name"], newpb));
     }
     
     else if (message == "!match")
-        client.say(chatChannel, DB.match(user["display-name"].toLowerCase(), 3));
+        client.say(chatChannel, DB.match(user["display-name"], 3));
     
     else if (message.startsWith("!match ")) {
         let after = message.substring(7).split(" ");
-        let u = user["display-name"].toLowerCase();
+        let u = user["display-name"];
         if (after.length > 2 || after.length == 0) 
             return;
         
@@ -304,11 +306,11 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message == "!record")
-        client.say(chatChannel, DB.getRecord(user["display-name"].toLowerCase()));
+        client.say(chatChannel, DB.getRecord(user["display-name"]));
     
     else if (message.startsWith("!record ")) {
 
-        let u = message.substring(message.indexOf(" ") + 1).toLowerCase();
+        let u = message.substring(message.indexOf(" ") + 1);
         if (u.indexOf(" ") != -1) return;
         if (u[0] == "@") u = u.substring(1);
 
@@ -357,7 +359,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         acceptedCommand(challenger, defender);
     }
 
-    else if (message.startsWith("!decline ") || message.startsWith("!declinechallenge")) {
+    else if (message.startsWith("!decline ") || message.startsWith("!declinechallenge ")) {
 
         let defender = user["display-name"];
         let challenger = message.substring(message.indexOf(" ") + 1);
@@ -393,7 +395,7 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     else if (message.startsWith("!winner ")) {
 
-        let w = message.substring(8).toLowerCase();
+        let w = message.substring(8);
         if (w[0] == "@")
             w = w.substring(1);
 
@@ -416,7 +418,6 @@ client.on("chat", (chatChannel, user, message, self) => {
                 let users = message.substring(11).trim().split(" ");
                 if (users.length == 2) {
                     users = users.map((u) => {
-                        u = u.toLowerCase();
                         if (u[0] == "@") u = u.substring(1);
                         return u;
                     });
