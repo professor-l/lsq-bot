@@ -8,8 +8,8 @@ class MatchQueue {
     // Callback includes a setTimeout to remove it
     // Returns string to be printed to chat
     addChallenge(challenger, defender, callback) {
-        challenger = challenger.toLowerCase();
-        defender = defender.toLowerCase();
+        challenger = challenger;
+        defender = defender;
 
         // If challenge already exists, don't add it
         for (let i = 0; i < this.challenges.length; i++) {
@@ -20,7 +20,7 @@ class MatchQueue {
         }
 
         // Add the challenge
-        this.challenges.push(new Challenge(challenger.toLowerCase(), defender.toLowerCase(), callback));
+        this.challenges.push(new Challenge(challenger, defender, callback));
 
         // Return string
         return defender + " : " + challenger + " has challenged you to a match! You have 30 seconds to accept or decline their challenge.";
@@ -29,8 +29,8 @@ class MatchQueue {
     // Removes challenge between two users
     // Reason is "timeout", "cancelled", "declined", or "accepted"
     removeChallenge(user1, user2, reason) {
-        user1 = user1.toLowerCase();
-        user2 = user2.toLowerCase();
+        user1 = user1;
+        user2 = user2;
 
         // Get index of challenge in challenges array
         let index = -1;
@@ -69,8 +69,8 @@ class MatchQueue {
     addMatch(challenger, defender) {
 
         // Lowercase to compare with user array
-        challenger = challenger.toLowerCase();
-        defender = defender.toLowerCase();
+        challenger = challenger;
+        defender = defender;
 
         // Make sure challenge exists
         let challengeExists = false;
@@ -87,15 +87,15 @@ class MatchQueue {
             return defender +  " : No challenge has been made to you from " + challenger + ".";
 
         // Add match to queue, return string
-        this.queue.push(new Match(challenger.toLowerCase(), defender.toLowerCase()));
+        this.queue.push(new Match(challenger, defender));
         return defender + " has accepted " + challenger + "'s challenge! Match queued in spot " + this.queue.length + ".";
     }
 
     addMatchAtIndex(challenger, defender, index) {
         
         // Lowercase to compare with user array
-        challenger = challenger.toLowerCase();
-        defender = defender.toLowerCase();
+        challenger = challenger;
+        defender = defender;
 
         if (challenger == defender)
             return "Matches need to be between two different people, silly!";
@@ -110,8 +110,8 @@ class MatchQueue {
     removeMatch(user1, user2, reason) {
 
         // Lowercase to compare with user array
-        user1 = user1.toLowerCase();
-        user2 = user2.toLowerCase();
+        user1 = user1;
+        user2 = user2;
 
         // Set index of match in queue
         let index = -1;
@@ -145,7 +145,7 @@ class MatchQueue {
     matchCompleted(winner, loser) {
 
         // Lowercase to compare wtih user array
-        winner = winner.toLowerCase();
+        winner = winner;
 
         // Remove first (current) match from queue
         let match = this.queue.shift();
