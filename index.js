@@ -46,6 +46,7 @@ let DB = new DataCommunicator("db/data.json", 60000);
 
 
 
+
 client.connect();
 
 // Connected message
@@ -97,6 +98,8 @@ function acceptedCommand(challenger, defender) {
             client.say(channel, defender + " : user \"" + challenger + "\" is not in chat.");
         }
     );
+
+    updateStoredQueue();
 }
 
 function declinedCommand(challenger, defender) {
@@ -133,6 +136,7 @@ function cancelledCommand(challenger, defender) {
 
 function forfeittedCommand(forfeitter, user2) {
     client.say(channel, GlobalQueue.removeMatch(forfeitter, user2, "forfeit"));
+    updateStoredQueue();
 }
 
 
@@ -141,6 +145,7 @@ function won(winner, loser) {
     client.say(channel, GlobalQueue.matchCompleted(winner, loser));
     DB.addWin(winner);
     DB.addLoss(loser);
+    updateStoredQueue();
 }
 
 function winnerCommand(winner) {
@@ -174,6 +179,7 @@ function removeCommand(index) {
     let c = GlobalQueue.queue[index].challenger;
     let d = GlobalQueue.queue[index].defender;
     client.say(channel, GlobalQueue.removeMatch(c, d, "cancel"));
+    updateStoredQueue();
 }
 
 function addAtIndexCommand(message) {
@@ -199,12 +205,13 @@ function addAtIndexCommand(message) {
     }
 
     client.say(channel, GlobalQueue.addMatchAtIndex(arr[0], arr[1], arr[2]));
-
+    updateStoredQueue();
 }
 
 function clearAllCommand() {
     GlobalQueue.queue = [];
     client.say(channel, "You have exerted your power, and the queue has been cleared.");
+    updateStoredQueue();
 }
 
 function clearPlayerCommand(player) {
@@ -222,6 +229,7 @@ function clearPlayerCommand(player) {
     }
 
     client.say(channel, "All matches with player \"" + player + "\" removed. New queue: " + GlobalQueue.listQueue());
+    updateStoredQueue();
 }
 
 client.on("chat", (chatChannel, user, message, self) => {
@@ -499,4 +507,28 @@ client.on("chat", (chatChannel, user, message, self) => {
         client.say(channel, "Like the current match? Follow the players at https://www.twitch.tv/" + c + " and https://www.twitch.tv/" + d + " respectively. Good luck to them!");
     }
 
+    else if (message == "!testqueuestorage") {
+        process.exit();
+    }
+
 });
+
+
+
+// Queue storage for testing
+function updateStoredQueue() {
+    let q = []
+    for (let i = 0; i < GlobalQueue.queue.length; i++) {
+        let c = GlobalQueue.queue[i].challenger;
+        let d = GlobalQueue.queue[i].defender;
+
+        q.push([c, d]);
+    }
+    DB.writeQueue({"queue": q});
+}
+
+// Queue reading (testing)
+let formerQueue = DB.readQueue();
+console.log(formerQueue);
+for (let i = 0; i < formerQueue.length; i++)
+    GlobalQueue.addMatchAtIndex(formerQueue[i][0], formerQueue[i][1], GlobalQueue.queue.length);

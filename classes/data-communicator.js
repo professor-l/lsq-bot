@@ -104,6 +104,19 @@ class DataCommunicator {
         
         return user + " has " + w + " win" + winSuffix + " and " + l + " loss" + lossSuffix + ". That's a win percentage of " + Math.round((w / (l + w)) * 100) / 100 + "%.";
     }
+
+
+
+    // Error security
+    readQueue() {
+        return JSON.parse(fs.readFileSync("queue.json"))["queue"];
+    }
+
+    writeQueue(queue) {
+        fs.writeFile("queue.json", JSON.stringify(queue, null, 2), (err) => {
+            if (err) throw err;
+        });
+    }
 }
 
 module.exports = DataCommunicator;
