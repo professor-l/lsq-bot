@@ -10,7 +10,3 @@ input_files/
 
 // stored JSON data
 db/
-
-// Temporary beta testing run script and storage file
-test.sh
-queue.json
