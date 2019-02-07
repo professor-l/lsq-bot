@@ -2,20 +2,24 @@ class MatchQueue {
     constructor() {
         this.queue = [];
         this.challenges = [];
+
+        this.open = true;
     }
 
     // Adds challenge to challenge array
     // Callback includes a setTimeout to remove it
     // Returns string to be printed to chat
     addChallenge(challenger, defender, callback) {
+        if (!this.open)
+            return "Challenges have been closed! Try again next time!";
+        
         challenger = challenger;
         defender = defender;
 
         // If challenge already exists, don't add it
         for (let i = 0; i < this.challenges.length; i++) {
-            if (this.challenges[i].challenger == challenger &&
-                this.challenges[i].defender == defender) {
-                    return challenger + " : You have already challenged " + defender + " to a match!"
+            if (this.challenges[i].challenger == challenger) {
+                    return challenger + " : You have already challenged " + this.challenges[i].defender + " to a match. Wait for them to accept or decline (or for the challenge to timeout) before challenging someone again!";
             }
         }
 
@@ -23,14 +27,12 @@ class MatchQueue {
         this.challenges.push(new Challenge(challenger, defender, callback));
 
         // Return string
-        return defender + " : " + challenger + " has challenged you to a match! You have 30 seconds to accept or decline their challenge.";
+        return defender + " : " + challenger + " has challenged you to a match! You have 60 seconds to accept or decline their challenge.";
     }
 
     // Removes challenge between two users
     // Reason is "timeout", "cancelled", "declined", or "accepted"
     removeChallenge(user1, user2, reason) {
-        user1 = user1;
-        user2 = user2;
 
         // Get index of challenge in challenges array
         let index = -1;
@@ -163,6 +165,16 @@ class MatchQueue {
         return (f == "" ? "No current queue." : f);
     }
 
+    closeChallenges() {
+        this.open = false;
+        return "Challenges have just been closed. No new challenges can be made between players.  GGs to everyone, and come back next time!";
+    }
+    
+    openChallenges() {
+        this.open = true;
+        return "Challenges have been reopend! Time to prove yourself!";
+    }
+
 
 
     congratsMessage() {
@@ -183,7 +195,7 @@ class Challenge {
     constructor(challenger, defender, callback) {
         this.challenger = challenger;
         this.defender = defender;
-        this.timeout = setTimeout(callback, 30000)
+        this.timeout = setTimeout(callback, 60000)
     }
 }
 

@@ -8,6 +8,7 @@ class UserChecker {
     }
 
     exists(username, ifTrue, ifFalse) {
+        username = username.toLowerCase();
         let url = "http://tmi.twitch.tv/group/user/" + this.channel + "/chatters";
         http.get(url, (response) => {
             let data = "";
@@ -30,6 +31,7 @@ class UserChecker {
     }
 
     moderator(username, ifTrue, ifFalse) {
+        username = username.toLowerCase();
         let url = "http://tmi.twitch.tv/group/user/" + this.channel.toLowerCase() + "/chatters";
         http.get(url, (response) => {
             let data = "";
@@ -38,7 +40,6 @@ class UserChecker {
             });
             response.on("end", () => {
                 let mods = JSON.parse(data).chatters.moderators;
-                console.log(mods);
 
                 if (mods.indexOf(username) != -1 || username == this.channel) {
                     ifTrue();

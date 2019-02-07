@@ -102,7 +102,7 @@ class DataCommunicator {
         let winSuffix = (w == 1) ? "" : "s";
         let lossSuffix = (l == 1) ? "" : "es";
         
-        return user + " has " + w + " win" + winSuffix + " and " + l + " loss" + lossSuffix + ". That's a win percentage of " + Math.round((w / (l + w)) * 100) / 100 + "%.";
+        return user + " has " + w + " win" + winSuffix + " and " + l + " loss" + lossSuffix + ". That's a win percentage of " + Math.round((w / (l + w)) * 100) + "%.";
     }
 
 

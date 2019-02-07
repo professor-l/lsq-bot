@@ -84,38 +84,15 @@ function challengeCommand(challenger, defender) {
 }
 
 function acceptedCommand(challenger, defender) {
-    Check.exists(challenger,
-        // If user exists, add match, remove challenge
-        () => {
-            client.say(channel, 
-                GlobalQueue.addMatch(challenger, defender)
-            );
-            GlobalQueue.removeChallenge(challenger, defender, "accepted");
-        },
 
-        // Otherwise, alert chat
-        () => {
-            client.say(channel, defender + " : user \"" + challenger + "\" is not in chat.");
-        }
-    );
+    client.say(channel, GlobalQueue.addMatch(challenger, defender));
+    GlobalQueue.removeChallenge(challenger, defender, "accepted");
 
-    updateStoredQueue();
+    
 }
 
 function declinedCommand(challenger, defender) {
-    Check.exists(challenger,
-        // If user exists, decline challenge
-        () => {
-            client.say(channel, 
-                GlobalQueue.removeChallenge(challenger, defender, "declined")
-            );
-        },
-
-        // Otherwise, alert chat
-        () => {
-            client.say(channel, defender + " : user \"" + challenger + "\" is not in chat.");
-        }
-    );
+    client.say(channel, GlobalQueue.removeChallenge(challenger, defender, "declined"));
 }
 
 function cancelledCommand(challenger, defender) {
@@ -136,7 +113,7 @@ function cancelledCommand(challenger, defender) {
 
 function forfeittedCommand(forfeitter, user2) {
     client.say(channel, GlobalQueue.removeMatch(forfeitter, user2, "forfeit"));
-    updateStoredQueue();
+    
 }
 
 
@@ -145,7 +122,7 @@ function won(winner, loser) {
     client.say(channel, GlobalQueue.matchCompleted(winner, loser));
     DB.addWin(winner);
     DB.addLoss(loser);
-    updateStoredQueue();
+    
 }
 
 function winnerCommand(winner) {
@@ -179,7 +156,7 @@ function removeCommand(index) {
     let c = GlobalQueue.queue[index].challenger;
     let d = GlobalQueue.queue[index].defender;
     client.say(channel, GlobalQueue.removeMatch(c, d, "cancel"));
-    updateStoredQueue();
+    
 }
 
 function addAtIndexCommand(message) {
@@ -189,10 +166,13 @@ function addAtIndexCommand(message) {
     if (arr.length < 2 || arr.length > 3 || (arr.length == 3 && parseInt(arr[2]) == NaN))
         return;
     
-    arr[2] = parseInt(arr[2]) - 1 || GlobalQueue.queue.length;
+    if (parseInt(arr[2]))
+        arr[2] = parseInt(arr[2]) - 1;
+    else
+        arr[2] = GlobalQueue.queue.length;
 
     if (arr[2] < 0 || arr[2] > GlobalQueue.queue.length)
-        client.say(channel, "Invalid index. Cannot add ")
+        client.say(channel, "Invalid index. Cannot add.")
    
     for (let i = 0; i < 2; i++) {
         if (arr[i][0] == "@")
@@ -205,13 +185,13 @@ function addAtIndexCommand(message) {
     }
 
     client.say(channel, GlobalQueue.addMatchAtIndex(arr[0], arr[1], arr[2]));
-    updateStoredQueue();
+    
 }
 
 function clearAllCommand() {
     GlobalQueue.queue = [];
     client.say(channel, "You have exerted your power, and the queue has been cleared.");
-    updateStoredQueue();
+    
 }
 
 function clearPlayerCommand(player) {
@@ -229,7 +209,7 @@ function clearPlayerCommand(player) {
     }
 
     client.say(channel, "All matches with player \"" + player + "\" removed. New queue: " + GlobalQueue.listQueue());
-    updateStoredQueue();
+    
 }
 
 client.on("chat", (chatChannel, user, message, self) => {
@@ -239,79 +219,98 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     let ch = chatChannel.substring(1);
 
-    if (message == "!pb") {
-        let u = user["display-name"];
-        let pb = DB.getValue(u, "pb");
-        client.say(chatChannel, u + " has a personal best of " + pb + ".");
-    }
 
-    else if (message.startsWith("!pb ")) {
-        let u = message.substring(4);
-        if (u[0] == "@") u = u.substring(1);
 
-        if (u.indexOf(" ") != -1 || parseInt(u))
-            return;
-        
-        let pb = DB.getValue(u, "pb") || 0;
-        if (pb)
-            client.say(chatChannel, u + " has a personal best of " + pb + ".");
-        else 
-            client.say(chatChannel, "User \"" + u + "\" has not saved a personal best.");
+    // TEMPORARY
 
-    }
-    
-    else if (message.startsWith("!newpb ")) {
-        let newpb = parseInt(message.substring(7));
-        if (newpb != message.substring(7))
-            return;
-        
-        if (newpb < 0)
-            client.say("Your PB can't be negative, silly!");
-        
-        client.say(chatChannel, DB.addPB(user["display-name"], newpb));
-    }
-    
-    else if (message == "!match")
-        client.say(chatChannel, DB.match(user["display-name"], 3));
-    
-    else if (message.startsWith("!match ")) {
-        let after = message.substring(7).split(" ");
-        let u = user["display-name"];
-        if (after.length > 2 || after.length == 0) 
-            return;
-        
-        if (after.length == 1) {
-            let arg = parseInt(after[0]);
-
-            if (arg != NaN) {
-                if (arg > 10) arg = 10;
-                client.say(chatChannel, DB.match(u, arg));
-                return;
-            }
-
-            if (!DB.getValue(u, "pb")) {
-                client.say(chatChannel, u + " : You haven't saved a pb!");
-                return;
-            }
-
-            client.say(chatChannel, DB.match(u));
-
-            return;
+    if (user["display-name"] == "monthlytetris" || user["display-name"] == "vandweller") {
+        if (message == "!3") {
+            setTimeout(() => {client.say(channel, "3")}, 1000);
+            setTimeout(() => {client.say(channel, "2")}, 2000);
+            setTimeout(() => {client.say(channel, "1")}, 3000);
+            setTimeout(() => {client.say(channel, "TETRIS!")}, 4000);
         }
-
-        u = after[0];
-        n = parseInt(after[1]);
-
-        if (!DB.getValue(u, "pb")) {
-            client.say(chatChannel, "User \"" + u + "\" has not saved a pb.");
-        }
-
-        if (n == NaN)
-            return;
-        
-        client.say(chatChannel, DB.match(u, n));
-
     }
+
+    if (message == "!discord") {
+        client.say(channel, "Like what you see? Join the Classic Tetris Monthly Discord channel!  https://discord.gg/c2tqp5r ");
+    }
+
+    // END TEMPORARY
+
+    // if (message == "!pb") {
+    //     let u = user["display-name"];
+    //     let pb = DB.getValue(u, "pb");
+    //     client.say(chatChannel, u + " has a personal best of " + pb + ".");
+    // }
+
+    // else if (message.startsWith("!pb ")) {
+    //     let u = message.substring(4);
+    //     if (u[0] == "@") u = u.substring(1);
+
+    //     if (u.indexOf(" ") != -1 || parseInt(u))
+    //         return;
+        
+    //     let pb = DB.getValue(u, "pb") || 0;
+    //     if (pb)
+    //         client.say(chatChannel, u + " has a personal best of " + pb + ".");
+    //     else 
+    //         client.say(chatChannel, "User \"" + u + "\" has not saved a personal best.");
+
+    // }
+    
+    // else if (message.startsWith("!newpb ")) {
+    //     let newpb = parseInt(message.substring(7));
+    //     if (newpb != message.substring(7))
+    //         return;
+        
+    //     if (newpb < 0)
+    //         client.say("Your PB can't be negative, silly!");
+        
+    //     client.say(chatChannel, DB.addPB(user["display-name"], newpb));
+    // }
+    
+    // else if (message == "!match")
+    //     client.say(chatChannel, DB.match(user["display-name"], 3));
+    
+    // else if (message.startsWith("!match ")) {
+    //     let after = message.substring(7).split(" ");
+    //     let u = user["display-name"];
+    //     if (after.length > 2 || after.length == 0) 
+    //         return;
+        
+    //     if (after.length == 1) {
+    //         let arg = parseInt(after[0]);
+
+    //         if (arg != NaN) {
+    //             if (arg > 10) arg = 10;
+    //             client.say(chatChannel, DB.match(u, arg));
+    //             return;
+    //         }
+
+    //         if (!DB.getValue(u, "pb")) {
+    //             client.say(chatChannel, u + " : You haven't saved a pb!");
+    //             return;
+    //         }
+
+    //         client.say(chatChannel, DB.match(u));
+
+    //         return;
+    //     }
+
+    //     u = after[0];
+    //     n = parseInt(after[1]);
+
+    //     if (!DB.getValue(u, "pb")) {
+    //         client.say(chatChannel, "User \"" + u + "\" has not saved a pb.");
+    //     }
+
+    //     if (n == NaN)
+    //         return;
+        
+    //     client.say(chatChannel, DB.match(u, n));
+
+    // }
 
     else if (message == "!record")
         client.say(chatChannel, DB.getRecord(user["display-name"]));
@@ -332,6 +331,7 @@ client.on("chat", (chatChannel, user, message, self) => {
 
 
     // Display help message
+
     else if (message == "!help")
         client.say(chatChannel, "See https://github.com/professor-l/lsq-bot#readme for detailed instructions.");
     
@@ -356,23 +356,41 @@ client.on("chat", (chatChannel, user, message, self) => {
         challengeCommand(challenger, defender);
     }
 
-    else if (message.startsWith("!accept ") || message.startsWith("!acceptchallenge ")) {
+    else if (message == "!accept" || message == "!acceptchallenge") {
 
 
         let defender = user["display-name"];
-        let challenger = message.substring(message.indexOf(" ") + 1);
-        if (challenger[0] == "@")
-            challenger = challenger.substring(1);
+        let challenger;
+
+        for (let i = 0; i < GlobalQueue.challenges.length; i++) {
+            if (GlobalQueue.challenges[i].defender == defender) {
+                challenger = GlobalQueue.challenges[i].challenger;
+                break;
+            }
+        }
+
+        if (!challenger) {
+            client.say(channel, defender + " : No one has challenged you!");
+        }
 
         acceptedCommand(challenger, defender);
     }
 
-    else if (message.startsWith("!decline ") || message.startsWith("!declinechallenge ")) {
+    else if (message == "!decline" || message == "!declinechallenge") {
 
         let defender = user["display-name"];
-        let challenger = message.substring(message.indexOf(" ") + 1);
-        if (challenger[0] == "@")
-            challenger = challenger.substring(1);
+        let challenger;
+
+        for (let i = 0; i < GlobalQueue.challenges.length; i++) {
+            if (GlobalQueue.challenges[i].defender == defender) {
+                challenger = GlobalQueue.challenges[i].challenger;
+                break;
+            }
+        }
+
+        if (!challenger) {
+            client.say(channel, defender + " : No one has challenged you!");
+        }
 
         declinedCommand(challenger, defender);
     }
@@ -397,7 +415,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         forfeittedCommand(forfeitter, user2);
     }
 
-    else if (message == "!queue" || message == "!list" || message == "!matches") {
+    else if (message == "!queue" || message == "!list" || message == "!matches" || message == "!q") {
         client.say(channel, GlobalQueue.listQueue());
     }
 
@@ -468,6 +486,34 @@ client.on("chat", (chatChannel, user, message, self) => {
         );
     }
 
+    else if (message == "!close") {
+        Check.moderator(user["display-name"], 
+        
+            () => {
+                client.say(channel, GlobalQueue.closeChallenges());
+            },
+
+            () => {
+                client.say(channel, user["display-name"] + " : you are not a moderator.");
+            }
+
+        );
+    }
+
+    else if (message == "!open") {
+        Check.moderator(user["display-name"], 
+        
+            () => {
+                client.say(channel, GlobalQueue.openChallenges());
+            },
+
+            () => {
+                client.say(channel, user["display-name"] + " : you are not a moderator.");
+            }
+
+        );
+    }
+
     else if (message.startsWith("!clear ")) {
         Check.moderator(user["display-name"], 
 
@@ -507,28 +553,4 @@ client.on("chat", (chatChannel, user, message, self) => {
         client.say(channel, "Like the current match? Follow the players at https://www.twitch.tv/" + c + " and https://www.twitch.tv/" + d + " respectively. Good luck to them!");
     }
 
-    else if (message == "!testqueuestorage") {
-        process.exit();
-    }
-
 });
-
-
-
-// Queue storage for testing
-function updateStoredQueue() {
-    let q = []
-    for (let i = 0; i < GlobalQueue.queue.length; i++) {
-        let c = GlobalQueue.queue[i].challenger;
-        let d = GlobalQueue.queue[i].defender;
-
-        q.push([c, d]);
-    }
-    DB.writeQueue({"queue": q});
-}
-
-// Queue reading (testing)
-let formerQueue = DB.readQueue();
-console.log(formerQueue);
-for (let i = 0; i < formerQueue.length; i++)
-    GlobalQueue.addMatchAtIndex(formerQueue[i][0], formerQueue[i][1], GlobalQueue.queue.length);
