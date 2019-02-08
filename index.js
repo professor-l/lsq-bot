@@ -66,6 +66,13 @@ function challengeCommand(challenger, defender) {
         return;
     }
 
+    for (let i = 0; i < GlobalQueue.challenges.length; i++) {
+        if (GlobalQueue.challenges[i].challenger == challenger) {
+            client.say(channel, challenger + " : You have already challenged someone else to a match!");
+            return;
+        }
+    }
+
     // If defender exists, add challenge between them
     Check.exists(defender, 
         () => {
@@ -96,19 +103,7 @@ function declinedCommand(challenger, defender) {
 }
 
 function cancelledCommand(challenger, defender) {
-    Check.exists(challenger,
-        // If user exists, cancel challenge
-        () => {
-            client.say(channel, 
-                GlobalQueue.removeChallenge(challenger, defender, "cancelled")
-            );
-        },
-
-        // Otherwise, alert chat
-        () => {
-            client.say(channel, defender + " : user \"" + challenger + "\" is not in chat.");
-        }
-    );
+    client.say(channel, GlobalQueue.removeChallenge(challenger, defender, "cancelled"));
 }
 
 function forfeittedCommand(forfeitter, user2) {
@@ -395,14 +390,19 @@ client.on("chat", (chatChannel, user, message, self) => {
         declinedCommand(challenger, defender);
     }
 
-    else if (message.startsWith("!cancel ") || message.startsWith("!cancelchallenge ")) {
+    else if (message == "!cancel" || message == "!cancelchallenge" || message == "!cancelchal") {
 
         let challenger = user["display-name"];
-        let defender = message.substring(message.indexOf(" ") + 1);
-        if (defender[0] == "@")
-            defender = defender.substring(1);
 
-        cancelledCommand(challenger, defender);
+        for (let i = 0; i < GlobalQueue.challenges.length; i++) {
+            if (GlobalQueue.challenges[i].challenger == challenger) {
+                cancelledCommand(challenger, GlobalQueue.challenges[i].defender);
+                return;
+            }
+        }
+
+        client.say(channel, challenger + " : You have not challenged anyone!");
+        
     }
 
     else if (message.startsWith("!forfeit ") || message.startsWith("!forfeitmatch ")) {

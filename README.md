@@ -10,12 +10,12 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
 #### LsQ Bot supports the following commands:
 
   * Queueing
-    * `!challenge <user>`- challenges the user to a match, if such a user exists, you have not yet challenged them, and no match between you and the user is already in the queue. Challenge expires after 30 seconds.
-    * `!accept <user>` (or `!acceptchallenge <user>`) - accepts user's challenge if such a challenge has been made, and adds the match to the queue. **You must specify who you are accepting the challenge from when you accept a challenge.**
-    * `!decline <user>` (or `!declinechallenge <user>`) - declines user's challenge if such a challenge has been made.
-    * `!cancel <user>` (or `!cancelchallenge <user>`) - cancels challenge against user, if such a challenge has been made.
+    * `!challenge <user>`- challenges the user to a match, if such a user exists and they have no pending challenge from you or someone else. You may only challenge one user at a time.
+    * `!accept` (or `!acceptchallenge`) - accepts the challenge issued to you if one has been made, and adds the match to the queue.
+    * `!decline` (or `!declinechallenge`) - declines the challenge issued to you if one has been made.
+    * `!cancel` (or `!cancelchallenge`) - cancels challenge against user, if such a challenge has been made.
     * `!forfeit <user>` (or `!forfeitmatch <user>`) - forefits your match against user, if such a match has been scheduled. 
-    * `!queue` (or `!list`, `!matches`) - prints queue in order, numbered. If this is spammed, I will add a feature that only lets it be called every 15 seconds. Please be respectful.
+    * `!queue` (or `!q`, `!list`, `!matches`) - prints queue in order, numbered. If this is spammed, I will add a feature that only lets it be called every 15 seconds. Please be respectful.
 
   * Matchmaking **(temporarily disabled)**
     * `!pb <user>` - Outputs the personal best score of user, if said user has set a PB.
@@ -27,14 +27,12 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
 
   * `!winner <user>` - Removes the match at number 1 in the queue (the current match at any given time), and declares user the winner in chat with a congratulatory message. Also adds result to the statistics file. Used at the end of matches.
   * `!addresult <winner> <loser>` - Congratulates winner and adds inputted result to the statistics file. Used for matches not in queue.
-  * `!removematch <index>` (or `!kill <index>`) - Removes a match from the queue at the given index, without declaring a winner. Used at moderator's discretion.
-  * `!add <user1> <user2> <index>` (or `!addmatch`) - Adds a match between user1 and user2 at the inputted index in the queue. This command may, for instance, be used for impromptu matches between top players.
-  * `!clear <user>` (or `!clearqueue <user>`) - Clears all matches in which user is a participant. If no user is specified, clears the entire queue, so be careful!
-  * `!shoutout` (or `!so`) - Gives a shoutout to the players of the current match, linking their Twitch channels.
+  * `!removematch <index>` (or `!kill`) - Removes a match from the queue at the given index, without declaring a winner. Used at moderator's discretion.
+  * `!add <user1> <user2> <index>` (or `!addmatch`) - Adds a match between user1 and user2 at the inputted index in the queue. IF no index is specified, the match is added to the end. This command may, for instance, be used for impromptu matches between top players.
+  * `!clear <user>` (or `!clearqueue <user>`) - Clears all matches in which user is a participant. If no user is specified, this clears the entire queue, so be careful!
+  * `!shoutout` (or `!so`) - Gives a shoutout to the players of the current match, linking their Twitch channels. (TODO: make automatic)
   
 ## For developers
-
-**The bot is NOT ready to be used. A development implementation is currently pushed which saves the queue in a JSON file when it is changed and reads from it when it reboots. Do NOT fork or clone this repository with intention to use the bot yet.**
 
 If you intend to use this bot yourself, there are a few steps you need to take. It requires the installation of [Node.js](https://nodejs.org/). Once you have cloned this repository to your machine, navigate to the home directory in your terminal and run `npm install`. This will install the necessary packages to communicate with the Twitch chat.
 
