@@ -18,10 +18,13 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
     * `!queue` (or `!q`, `!list`, `!matches`) - prints queue in order, numbered. If this is spammed, I will add a feature that only lets it be called every 15 seconds. Please be respectful.
 
   * Matchmaking **(temporarily disabled)**
-    * `!pb <user>` - Outputs the personal best score of user, if said user has set a PB.
+    * `!pb <user>` - Outputs the personal best score of user, if said user has set a PB. If no user is specified, defaults to you.
     * `!newpb <pb>` (or `!setpb <pb>`) - Sets a new personal best for you.
     * `!match <user> <number>` - Prints out the players, currently present in chat, who have PBs closest to user's. The quantity of players printed is equal to number (maximum is 10).  Both arguments are optional - `user` defaults to you, `number` defaults to 3.
     * `!record <user>` - Prints out the user's record and win percentage. If no user is specified, defaults to you.
+  
+  * Miscellaneous 
+    * `!discord` - Outputs a link (and a plug) to the Classic Tetris Monthly Discord channel.
 
 #### For moderators, the following commands also exist:
 
@@ -30,7 +33,8 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
   * `!removematch <index>` (or `!kill`) - Removes a match from the queue at the given index, without declaring a winner. Used at moderator's discretion.
   * `!add <user1> <user2> <index>` (or `!addmatch`) - Adds a match between user1 and user2 at the inputted index in the queue. IF no index is specified, the match is added to the end. This command may, for instance, be used for impromptu matches between top players.
   * `!clear <user>` (or `!clearqueue <user>`) - Clears all matches in which user is a participant. If no user is specified, this clears the entire queue, so be careful!
-  * `!shoutout` (or `!so`) - Gives a shoutout to the players of the current match, linking their Twitch channels. (TODO: make automatic)
+  * `!shoutout` (or `!so`) - Gives a shoutout to the players of the current match, linking their Twitch channels. This automatically happens 3 minutes after a match gets to the front of the queue.
+  * `!3` (or `!321`) - Counts down from 3 before enthusiastically declaring "TETRIS!". This is how matches are started.  **This command is exclusive to the master of ceremonies.**
   
 ## For developers
 

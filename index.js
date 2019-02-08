@@ -44,6 +44,8 @@ let GlobalQueue = new MatchQueue();
 let Check = new UserChecker(channel);
 let DB = new DataCommunicator("db/data.json", 60000);
 
+let shoutoutTimeout;
+
 
 
 
@@ -115,6 +117,9 @@ function forfeittedCommand(forfeitter, user2) {
 // Congratulate and add statistics
 function won(winner, loser) {
     client.say(channel, GlobalQueue.matchCompleted(winner, loser));
+
+    setShoutoutTimeout();
+
     DB.addWin(winner);
     DB.addLoss(loser);
     
@@ -139,10 +144,11 @@ function winnerCommand(winner) {
 }
 
 function removeCommand(index) {
-    index--;
 
     if (index == NaN)
         return;
+    
+    index--;
 
     if (index >= GlobalQueue.queue.length)
         return;
@@ -151,6 +157,8 @@ function removeCommand(index) {
     let c = GlobalQueue.queue[index].challenger;
     let d = GlobalQueue.queue[index].defender;
     client.say(channel, GlobalQueue.removeMatch(c, d, "cancel"));
+
+    resetShoutoutTimeout();
     
 }
 
@@ -180,6 +188,10 @@ function addAtIndexCommand(message) {
     }
 
     client.say(channel, GlobalQueue.addMatchAtIndex(arr[0], arr[1], arr[2]));
+
+    if (GlobalQueue.queue.length == 1) {
+        setShoutoutTimeout();
+    }
     
 }
 
@@ -207,6 +219,30 @@ function clearPlayerCommand(player) {
     
 }
 
+function shoutoutCommand() {
+
+    if (!GlobalQueue.queue.length)
+        return;
+    
+    let c = GlobalQueue.queue[0].challenger;
+    let d = GlobalQueue.queue[0].defender;
+
+    client.say(channel, "Like the current match? Follow the players at https://www.twitch.tv/" + c + " and https://www.twitch.tv/" + d + " respectively. Good luck to them!");
+}
+
+function resetShoutoutTimeout() {
+    clearTimeout(shoutoutTimeout);
+
+    if (!GlobalQueue.queue.length)
+        return;
+
+    setShoutoutTimeout();
+}
+
+function setShoutoutTimeout() {
+    shoutoutTimeout = new setTimeout(shoutoutCommand, 60 * 1000 * 3);
+}
+
 client.on("chat", (chatChannel, user, message, self) => {
 
     user["display-name"] = user["display-name"].toLowerCase();
@@ -219,7 +255,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     // TEMPORARY
 
     if (user["display-name"] == "monthlytetris" || user["display-name"] == "vandweller") {
-        if (message == "!3") {
+        if (message == "!3" || message == "!321") {
             setTimeout(() => {client.say(channel, "3")}, 1000);
             setTimeout(() => {client.say(channel, "2")}, 2000);
             setTimeout(() => {client.say(channel, "1")}, 3000);
@@ -543,14 +579,14 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message == "!shoutout" || message == "!so") {
-
-        if (!GlobalQueue.queue.length)
-            return;
+        Check.moderator(user["display-name"],
         
-        let c = GlobalQueue.queue[0].challenger;
-        let d = GlobalQueue.queue[0].defender;
+            shoutoutCommand,
 
-        client.say(channel, "Like the current match? Follow the players at https://www.twitch.tv/" + c + " and https://www.twitch.tv/" + d + " respectively. Good luck to them!");
+            () => {
+                client.say(channel, user["display-name"] + " : you are not a moderator.");
+            }
+        );
     }
 
 });
