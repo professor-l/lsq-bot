@@ -245,103 +245,99 @@ function setShoutoutTimeout() {
 
 client.on("chat", (chatChannel, user, message, self) => {
 
+    console.log(chatChannel);
+
     user["display-name"] = user["display-name"].toLowerCase();
     message = message.toLowerCase();
 
     let ch = chatChannel.substring(1);
 
+    if (message == "!summon") {
+        client.join(user["display-name"]).then(() => {
+            client.say(chatChannel, user["display-name"] + " : this bot has been summoned to your channel!");
+        });
+        
+    }
 
-
-    // TEMPORARY
-
-    if (user["display-name"] == "monthlytetris" || user["display-name"] == "vandweller") {
-        if (message == "!3" || message == "!321") {
-            setTimeout(() => {client.say(channel, "3")}, 1000);
-            setTimeout(() => {client.say(channel, "2")}, 2000);
-            setTimeout(() => {client.say(channel, "1")}, 3000);
-            setTimeout(() => {client.say(channel, "TETRIS!")}, 4000);
+    if (message == "!pleaseleavemychannel") {
+        if (user["display-name"] == ch) {
+            client.part()
         }
     }
 
-    if (message == "!discord") {
-        client.say(channel, "Like what you see? Join the Classic Tetris Monthly Discord channel!  https://discord.gg/c2tqp5r ");
+    if (message == "!pb") {
+        let u = user["display-name"];
+        let pb = DB.getValue(u, "pb");
+        client.say(chatChannel, u + " has a personal best of " + pb + ".");
     }
 
-    // END TEMPORARY
+    else if (message.startsWith("!pb ")) {
+        let u = message.substring(4);
+        if (u[0] == "@") u = u.substring(1);
 
-    // if (message == "!pb") {
-    //     let u = user["display-name"];
-    //     let pb = DB.getValue(u, "pb");
-    //     client.say(chatChannel, u + " has a personal best of " + pb + ".");
-    // }
-
-    // else if (message.startsWith("!pb ")) {
-    //     let u = message.substring(4);
-    //     if (u[0] == "@") u = u.substring(1);
-
-    //     if (u.indexOf(" ") != -1 || parseInt(u))
-    //         return;
+        if (u.indexOf(" ") != -1 || parseInt(u))
+            return;
         
-    //     let pb = DB.getValue(u, "pb") || 0;
-    //     if (pb)
-    //         client.say(chatChannel, u + " has a personal best of " + pb + ".");
-    //     else 
-    //         client.say(chatChannel, "User \"" + u + "\" has not saved a personal best.");
+        let pb = DB.getValue(u, "pb") || 0;
+        if (pb)
+            client.say(chatChannel, u + " has a personal best of " + pb + ".");
+        else 
+            client.say(chatChannel, "User \"" + u + "\" has not saved a personal best.");
 
-    // }
+    }
     
-    // else if (message.startsWith("!newpb ")) {
-    //     let newpb = parseInt(message.substring(7));
-    //     if (newpb != message.substring(7))
-    //         return;
+    else if (message.startsWith("!newpb ")) {
+        let newpb = parseInt(message.substring(7));
+        if (newpb != message.substring(7))
+            return;
         
-    //     if (newpb < 0)
-    //         client.say("Your PB can't be negative, silly!");
+        if (newpb < 0)
+            client.say("Your PB can't be negative, silly!");
         
-    //     client.say(chatChannel, DB.addPB(user["display-name"], newpb));
-    // }
+        client.say(chatChannel, DB.addPB(user["display-name"], newpb));
+    }
     
-    // else if (message == "!match")
-    //     client.say(chatChannel, DB.match(user["display-name"], 3));
+    else if (message == "!match")
+        client.say(chatChannel, DB.match(user["display-name"], 3));
     
-    // else if (message.startsWith("!match ")) {
-    //     let after = message.substring(7).split(" ");
-    //     let u = user["display-name"];
-    //     if (after.length > 2 || after.length == 0) 
-    //         return;
+    else if (message.startsWith("!match ")) {
+        let after = message.substring(7).split(" ");
+        let u = user["display-name"];
+        if (after.length > 2 || after.length == 0) 
+            return;
         
-    //     if (after.length == 1) {
-    //         let arg = parseInt(after[0]);
+        if (after.length == 1) {
+            let arg = parseInt(after[0]);
 
-    //         if (arg != NaN) {
-    //             if (arg > 10) arg = 10;
-    //             client.say(chatChannel, DB.match(u, arg));
-    //             return;
-    //         }
+            if (arg != NaN) {
+                if (arg > 10) arg = 10;
+                client.say(chatChannel, DB.match(u, arg));
+                return;
+            }
 
-    //         if (!DB.getValue(u, "pb")) {
-    //             client.say(chatChannel, u + " : You haven't saved a pb!");
-    //             return;
-    //         }
+            if (!DB.getValue(u, "pb")) {
+                client.say(chatChannel, u + " : You haven't saved a pb!");
+                return;
+            }
 
-    //         client.say(chatChannel, DB.match(u));
+            client.say(chatChannel, DB.match(u));
 
-    //         return;
-    //     }
+            return;
+        }
 
-    //     u = after[0];
-    //     n = parseInt(after[1]);
+        u = after[0];
+        n = parseInt(after[1]);
 
-    //     if (!DB.getValue(u, "pb")) {
-    //         client.say(chatChannel, "User \"" + u + "\" has not saved a pb.");
-    //     }
+        if (!DB.getValue(u, "pb")) {
+            client.say(chatChannel, "User \"" + u + "\" has not saved a pb.");
+        }
 
-    //     if (n == NaN)
-    //         return;
+        if (n == NaN)
+            return;
         
-    //     client.say(chatChannel, DB.match(u, n));
+        client.say(chatChannel, DB.match(u, n));
 
-    // }
+    }
 
     else if (message == "!record")
         client.say(chatChannel, DB.getRecord(user["display-name"]));
