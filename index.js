@@ -253,16 +253,19 @@ client.on("chat", (chatChannel, user, message, self) => {
     let ch = chatChannel.substring(1);
 
     if (message == "!summon") {
-        client.join(user["display-name"]).then(() => {
+        client.join("#" + user["display-name"]).then(() => {
             client.say(chatChannel, user["display-name"] + " : this bot has been summoned to your channel!");
+            client.say("#" + user["display-name"], "I'm here now! :)");
         });
-        
     }
 
-    if (message == "!pleaseleavemychannel") {
+    else if (message == "!pleaseleavemychannel") {
         if (user["display-name"] == ch) {
-            client.part()
+            client.say(chatChannel, "Byebye! If you want me back, just !summon me again from a channel I'm a part of. o/");
+            client.part();
         }
+        else
+            client.say(chatChannel, "This isn't your channel >.>");
     }
 
     if (message == "!pb") {
