@@ -3,7 +3,8 @@ const http = require("http");
 const fs = require("fs");
 const MatchQueue = new require("./classes/match-queue");
 const UserChecker = new require("./classes/user-checker");
-const DataCommunicator = new require("./classes/data-communicator.js");
+const DataCommunicator = new require("./classes/data-communicator");
+const ChannelList = new require("./classes/channel-list");
 
 // Main channel (only channel to accept queueing/moderator commands)
 const channel = process.argv[2];
@@ -43,9 +44,9 @@ const client = new tmi.client(options);
 let GlobalQueue = new MatchQueue();
 let Check = new UserChecker(channel);
 let DB = new DataCommunicator("db/data.json", 60000);
+let Channels = new ChannelList("db/channels.txt");
 
 let shoutoutTimeout;
-
 
 
 
@@ -268,7 +269,7 @@ client.on("chat", (chatChannel, user, message, self) => {
             client.say(chatChannel, "This isn't your channel >.>");
     }
 
-    if (message == "!pb") {
+    else if (message == "!pb") {
         let u = user["display-name"];
         let pb = DB.getValue(u, "pb");
         client.say(chatChannel, u + " has a personal best of " + pb + ".");
