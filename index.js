@@ -7,21 +7,23 @@ const DataCommunicator = new require("./classes/data-communicator");
 const ChannelList = new require("./classes/channel-list");
 
 // Main channel (only channel to accept queueing/moderator commands)
-const channel = process.argv[2];
+const channel = process.argv[2].toLowerCase();
 const botName = "lsq_bot";
 
 // Read comma-separated channels file
 // Split by commas
 // Strip leading/trailing spaces
-const channelList = fs.readFileSync("input_files/channels.txt", "utf8").split(",").map(c => c.trim());
-
-if (channelList.indexOf(channel) == -1) {
-    console.log("Error: Channel is not in channels.txt. Try editing the file or choosing another channel.");
-    process.exitCode = 1;
-}
 
 // Read oath password fromfile
 const pw = fs.readFileSync("input_files/oathkey.txt", "utf8");
+
+let GlobalQueue = new MatchQueue();
+let Check = new UserChecker(channel);
+let DB = new DataCommunicator("db/data.json", 60000);
+let ChannelsObject = new ChannelList("db/channels.txt");
+let channelListArray = ChannelsObject.channels;
+
+let shoutoutTimeout;
 
 // Options object
 const options = {
@@ -36,30 +38,18 @@ const options = {
         username: "lsq_bot",
         password: pw
     },
-    channels: channelList
+    channels: channelListArray
 };
 
 const client = new tmi.client(options);
-
-let GlobalQueue = new MatchQueue();
-let Check = new UserChecker(channel);
-let DB = new DataCommunicator("db/data.json", 60000);
-let Channels = new ChannelList("db/channels.txt");
-
-let shoutoutTimeout;
-
-
 
 client.connect();
 
 // Connected message
 client.on("connected", (address, port) => {
-    console.log("Connected to channels");
-    let s = JSON.stringify(options.channels);
-    console.log(s.substring(1, s.length - 1));
     client.action(channel, "is up and running again!");
+    console.log("Startup successful");
 });
-
 
 
 function challengeCommand(challenger, defender) {
@@ -246,7 +236,6 @@ function setShoutoutTimeout() {
 
 client.on("chat", (chatChannel, user, message, self) => {
 
-    console.log(chatChannel);
 
     user["display-name"] = user["display-name"].toLowerCase();
     message = message.toLowerCase();
@@ -254,16 +243,19 @@ client.on("chat", (chatChannel, user, message, self) => {
     let ch = chatChannel.substring(1);
 
     if (message == "!summon") {
+        console.log("THIS IS THE TEST: ");
+        console.log(ChannelsObject.channels);
         client.join("#" + user["display-name"]).then(() => {
             client.say(chatChannel, user["display-name"] + " : this bot has been summoned to your channel!");
             client.say("#" + user["display-name"], "I'm here now! :)");
+            ChannelsObject.add(user["display-name"]);
         });
     }
 
     else if (message == "!pleaseleavemychannel") {
         if (user["display-name"] == ch) {
             client.say(chatChannel, "Byebye! If you want me back, just !summon me again from a channel I'm a part of. o/");
-            client.part();
+            client.part(chatChannel);
         }
         else
             client.say(chatChannel, "This isn't your channel >.>");

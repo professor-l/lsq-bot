@@ -7,9 +7,9 @@ class ChannelList {
     }
 
     add(channel) {
-        this.channels.append(channel);
         fs.appendFile(this.file, ",\n" + channel, (err) => {
             if (err) throw err;
+            this.channels.push(channel);
             console.log(channel + " added!");
         });
     }
@@ -17,10 +17,10 @@ class ChannelList {
     remove(channel) {
         let index = this.channels.indexOf(channel);
         if (index != -1) {
-            this.channels.splice(index, 1);
 
             fs.writeFile(this.file, this.channels.join(",\n"), (err) => {
                 if (err) throw err;
+                this.channels.splice(index, 1);
                 console.log(channel + " removed!");
             })
         }
