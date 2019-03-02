@@ -21,7 +21,6 @@ let GlobalQueue = new MatchQueue();
 let Check = new UserChecker(channel);
 let DB = new DataCommunicator("db/data.json", 60000);
 let ChannelsObject = new ChannelList("db/channels.txt");
-let channelListArray = ChannelsObject.channels;
 
 let shoutoutTimeout;
 
@@ -38,7 +37,7 @@ const options = {
         username: "lsq_bot",
         password: pw
     },
-    channels: channelListArray
+    channels: ChannelsObject.channels.slice()
 };
 
 const client = new tmi.client(options);
@@ -50,6 +49,19 @@ client.on("connected", (address, port) => {
     client.action(channel, "is up and running again!");
     console.log("Startup successful");
 });
+
+function summonCommand(chatChannel, user) {
+    if (ChannelsObject.channels.indexOf(user) != -1) {
+        client.say(chatChannel, user + " : I'm already in your channel!");
+        return;
+    }
+    client.join("#" + user).then(() => {
+        client.say(chatChannel, user + " : this bot has been summoned to your channel!");
+        client.say("#" + user, "I'm here now! :)");
+
+        ChannelsObject.add(user);
+    });
+}
 
 
 function challengeCommand(challenger, defender) {
@@ -242,15 +254,8 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     let ch = chatChannel.substring(1);
 
-    if (message == "!summon") {
-        console.log("THIS IS THE TEST: ");
-        console.log(ChannelsObject.channels);
-        client.join("#" + user["display-name"]).then(() => {
-            client.say(chatChannel, user["display-name"] + " : this bot has been summoned to your channel!");
-            client.say("#" + user["display-name"], "I'm here now! :)");
-            ChannelsObject.add(user["display-name"]);
-        });
-    }
+    if (message == "!summon")
+        summonCommand(chatChannel, user["display-name"]);
 
     else if (message == "!pleaseleavemychannel") {
         if (user["display-name"] == ch) {
