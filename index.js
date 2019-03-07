@@ -50,19 +50,16 @@ client.on("connected", (address, port) => {
     console.log("Startup successful");
 });
 
-function summonCommand(chatChannel, user) {
-    if (ChannelsObject.channels.indexOf(user) != -1) {
-        client.say(chatChannel, user + " : I'm already in your channel!");
-        return;
-    }
+function summonCommand(user) {
+    if (ChannelsObject.channels.indexOf(user) != -1)
+        return user + " : I'm already in your channel!";
+
     client.join("#" + user).then(() => {
-        client.say(chatChannel, user + " : this bot has been summoned to your channel!");
-        client.say("#" + user, "I'm here now! :)");
 
         ChannelsObject.add(user);
     });
+    return user + " : this bot has been summoned to your channel!";
 }
-
 
 function challengeCommand(challenger, defender) {
     
@@ -254,8 +251,8 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     let ch = chatChannel.substring(1);
 
-    if (message == "!summon")
-        summonCommand(chatChannel, user["display-name"]);
+    if (message == "!summon " + botName)
+        client.say(chatChannel, summonCommand(user["display-name"]));
 
     else if (message == "!pleaseleavemychannel") {
         if (user["display-name"] == ch) {
