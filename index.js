@@ -251,6 +251,20 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     let ch = chatChannel.substring(1);
 
+    if (message == "!3" || message == "!321" || message == "!countdown") {
+        UserChecker.moderator(user["display-name"], 
+        
+            () => {
+                setTimeout(() => {chatChannel.say("3")}, 1000);
+                setTimeout(() => {chatChannel.say("2")}, 2000);
+                setTimeout(() => {chatChannel.say("1")}, 3000);
+                setTimeout(() => {chatChannel.say("Tetris!")}, 4000);
+            },
+            
+            () => {return;}
+        );
+    }
+
     if (message == "!summon " + botName)
         client.say(chatChannel, summonCommand(user["display-name"]));
 
