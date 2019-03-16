@@ -277,6 +277,8 @@ client.on("chat", (chatChannel, user, message, self) => {
             client.say(chatChannel, "This isn't your channel >.>");
     }
 
+    /*
+
     else if (message == "!pb") {
         let u = user["display-name"];
         let pb = DB.getValue(u, "pb");
@@ -350,6 +352,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         client.say(chatChannel, DB.match(u, n));
 
     }
+    */
 
     else if (message == "!record")
         client.say(chatChannel, DB.getRecord(user["display-name"]));
