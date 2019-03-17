@@ -21,7 +21,7 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
     * `!pb <user>` - Outputs the personal best score of user, if said user has set a PB. If no user is specified, defaults to you.
     * `!newpb <pb>` (or `!setpb <pb>`) - Sets a new personal best for you.
     * `!match <user> <number>` - Prints out the players, currently present in chat, who have PBs closest to user's. The quantity of players printed is equal to number (maximum is 10).  Both arguments are optional - `user` defaults to you, `number` defaults to 3.
-    * `!record <user>` - Prints out the user's record and win percentage. If no user is specified, defaults to you.
+    * `!record <user>` (**enabled**) - Prints out the user's record and win percentage. If no user is specified, defaults to you.
   
   * Miscellaneous 
     * `!discord` - Outputs a link (and a plug) to the Classic Tetris Monthly Discord channel.
@@ -34,13 +34,12 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
   * `!add <user1> <user2> <index>` (or `!addmatch`) - Adds a match between user1 and user2 at the inputted index in the queue. IF no index is specified, the match is added to the end. This command may, for instance, be used for impromptu matches between top players.
   * `!clear <user>` (or `!clearqueue <user>`) - Clears all matches in which user is a participant. If no user is specified, this clears the entire queue, so be careful!
   * `!shoutout` (or `!so`) - Gives a shoutout to the players of the current match, linking their Twitch channels. This automatically happens 3 minutes after a match gets to the front of the queue.
-  * `!3` (or `!321`) - Counts down from 3 before enthusiastically declaring "TETRIS!". This is how matches are started.  **This command is exclusive to the master of ceremonies.**
   
 ## For developers
 
 If you intend to use this bot yourself, there are a few steps you need to take. It requires the installation of [Node.js](https://nodejs.org/). Once you have cloned this repository to your machine, navigate to the home directory in your terminal and run `npm install`. This will install the necessary packages to communicate with the Twitch chat.
 
-Next, you must create a folder in the lsq-bot directory called `input-files`. Inside that folder, create `channels.txt` and `oathkey.txt`. `channels.txt` will have a comma-separated list of all the channels to include in your bot. Note that the matchmaking commands are supported for **one channel only**, but the personal best tracking can be accessed from any channel in the `channels.txt` file. This is something I may fix in later versions, but for now it fits my needs and I don't have the time to change it at the moment. 
+Next, you must create a folder in the lsq-bot directory called `input-files`. Inside that folder, create `channels.txt` and `oathkey.txt`. `channels.txt` will have a comma-separated list of all the channels to include in your bot. Note that the matchmaking commands are supported for **one channel only**, but the personal best tracking can be accessed from any channel in the `channels.txt` file. This is something I may fix in later versions, but for now it fits my needs and I don't have the time to change it just yet. 
 
 In the `oathkey.txt` file, paste the oath key acquired from [this link](https://twitchapps.com/tmi/), making sure that you are signed in to the bot account on Twitch before you request the key. This will allow the bot to log into twitch and participate in chat.
 
