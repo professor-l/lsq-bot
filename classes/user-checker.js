@@ -3,11 +3,7 @@ const http = require("http");
 
 class UserChecker {
 
-    constructor(channel) {
-        this.channel = channel.toLowerCase();
-    }
-
-    exists(username, ifTrue, ifFalse) {
+    exists(channel, username, ifTrue, ifFalse) {
         username = username.toLowerCase();
         let url = "http://tmi.twitch.tv/group/user/" + this.channel + "/chatters";
         http.get(url, (response) => {
@@ -30,7 +26,7 @@ class UserChecker {
         });
     }
 
-    moderator(username, ifTrue, ifFalse) {
+    moderator(channel, username, ifTrue, ifFalse) {
         username = username.toLowerCase();
         let url = "http://tmi.twitch.tv/group/user/" + this.channel.toLowerCase() + "/chatters";
         http.get(url, (response) => {

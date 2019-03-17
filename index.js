@@ -31,7 +31,7 @@ const options = {
     },
     connection: {
         cluster: "aws",
-        reconnect: true
+        reconnect: true 
     },
     identity: {
         username: "lsq_bot",
@@ -76,7 +76,7 @@ function challengeCommand(challenger, defender) {
     }
 
     // If defender exists, add challenge between them
-    Check.exists(defender, 
+    Check.exists(channel, defender, 
         () => {
             client.say(channel, 
                 GlobalQueue.addChallenge(challenger, defender, () => {
@@ -252,16 +252,17 @@ client.on("chat", (chatChannel, user, message, self) => {
     let ch = chatChannel.substring(1);
 
     if (message == "!3" || message == "!321" || message == "!countdown") {
-        UserChecker.moderator(user["display-name"], 
+        console.log("A");
+        Check.moderator(chatChannel, user["display-name"], 
         
             () => {
-                setTimeout(() => {chatChannel.say("3")}, 1000);
-                setTimeout(() => {chatChannel.say("2")}, 2000);
-                setTimeout(() => {chatChannel.say("1")}, 3000);
-                setTimeout(() => {chatChannel.say("Tetris!")}, 4000);
+                setTimeout(() => {client.say(chatChannel, "3")}, 1000);
+                setTimeout(() => {client.say(chatChannel, "2")}, 2000)
+                setTimeout(() => {client.say(chatChannel, "1")}, 3000)
+                setTimeout(() => {client.say(chatChannel, "Tetris!")}, 4000)
             },
             
-            () => {return;}
+            () => { console.log("B"); return; }
         );
     }
 
@@ -277,7 +278,7 @@ client.on("chat", (chatChannel, user, message, self) => {
             client.say(chatChannel, "This isn't your channel >.>");
     }
 
-    /*
+    
 
     else if (message == "!pb") {
         let u = user["display-name"];
@@ -352,7 +353,8 @@ client.on("chat", (chatChannel, user, message, self) => {
         client.say(chatChannel, DB.match(u, n));
 
     }
-    */
+    
+
 
     else if (message == "!record")
         client.say(chatChannel, DB.getRecord(user["display-name"]));
@@ -472,7 +474,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         if (w[0] == "@")
             w = w.substring(1);
 
-        Check.moderator(user["display-name"], 
+        Check.moderator(channel, user["display-name"], 
         
             () => {
                 winnerCommand(w);
@@ -485,7 +487,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message.startsWith("!addresult ")) {
-        Check.moderator(user["display-name"], 
+        Check.moderator(channel, user["display-name"], 
         
             () => {
                 let users = message.substring(11).trim().split(" ");
@@ -506,7 +508,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message.startsWith("!kill ") || message.startsWith("!removematch ")) {
-        Check.moderator(user["display-name"], 
+        Check.moderator(channel, user["display-name"], 
         
             () => {
                 removeCommand(parseInt(message.substring(message.indexOf(" ") + 1)));
@@ -520,7 +522,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message.startsWith("!add ") || message.startsWith("!addmatch ")) {
-        Check.moderator(user["display-name"], 
+        Check.moderator(channel, user["display-name"], 
         
             () => {
                 addAtIndexCommand(message.substring(message.indexOf(" ") + 1));
@@ -534,7 +536,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message == "!close") {
-        Check.moderator(user["display-name"], 
+        Check.moderator(channel, user["display-name"], 
         
             () => {
                 client.say(channel, GlobalQueue.closeChallenges());
@@ -548,7 +550,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message == "!open") {
-        Check.moderator(user["display-name"], 
+        Check.moderator(channel, user["display-name"], 
         
             () => {
                 client.say(channel, GlobalQueue.openChallenges());
@@ -562,7 +564,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message.startsWith("!clear ")) {
-        Check.moderator(user["display-name"], 
+        Check.moderator(channel, user["display-name"], 
 
             () => {
                 let u = message.substring(7);
@@ -578,7 +580,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message == "!clear") {
-        Check.moderator(user["display-name"],
+        Check.moderator(channel, user["display-name"],
         
             clearAllCommand,
 
@@ -590,7 +592,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
 
     else if (message == "!shoutout" || message == "!so") {
-        Check.moderator(user["display-name"],
+        Check.moderator(channel, user["display-name"],
         
             shoutoutCommand,
 
