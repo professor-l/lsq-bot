@@ -3,8 +3,6 @@ lsq-bot
 
 LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot designed to allow players in a Twitch chat to matchmake with and challenge one another. It was designed specifically for Tetris Deathmatch, but it's open source and thus available to whomever wishes to use (or tweak) it. It is built on [Node.js](https://nodejs.org). It is also **completely open source**, and released under the MIT License (see [LICENSE](https://github.com/professor-l/lsq-bot/blob/master/LICENSE.md)).
 
-**Note that this bot is still in its debugging stage and is not ready for production use.  If you want to fork it, consider following the repository to be notified when beta testing has finished.**
-
 ## Commands
 
 #### LsQ Bot supports the following commands:
@@ -17,14 +15,15 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
     * `!forfeit <user>` (or `!forfeitmatch <user>`) - forefits your match against user, if such a match has been scheduled. 
     * `!queue` (or `!q`, `!list`, `!matches`) - prints queue in order, numbered. If this is spammed, I will add a feature that only lets it be called every 15 seconds. Please be respectful.
 
-  * Matchmaking **(temporarily disabled)**
+  * Matchmaking
     * `!pb <user>` - Outputs the personal best score of user, if said user has set a PB. If no user is specified, defaults to you.
     * `!newpb <pb>` (or `!setpb <pb>`) - Sets a new personal best for you.
     * `!match <user> <number>` - Prints out the players, currently present in chat, who have PBs closest to user's. The quantity of players printed is equal to number (maximum is 10).  Both arguments are optional - `user` defaults to you, `number` defaults to 3.
-    * `!record <user>` (**enabled**) - Prints out the user's record and win percentage. If no user is specified, defaults to you.
+    * `!record <user>` - Prints out the user's record and win percentage. If no user is specified, defaults to you.
   
   * Miscellaneous 
-    * `!discord` - Outputs a link (and a plug) to the Classic Tetris Monthly Discord channel.
+    * `!summon <bot_name>` - When called by a user from a channel in which the bot already resides, the bot will begin operating in that user's channel as well.
+    * `!3` (or `!321`, `!countdown`) - Says 3, 2, 1, Tetris!" in chat, with one second delays. The word "Tetris!" resides in line 273 of `index.js` if you wish to change it.
 
 #### For moderators, the following commands also exist:
 

@@ -34,7 +34,7 @@ const options = {
         reconnect: true 
     },
     identity: {
-        username: "lsq_bot",
+        username: "classictetrisbot",
         password: pw
     },
     channels: ChannelsObject.channels.slice()
@@ -68,6 +68,33 @@ function summonCommand(user) {
 function leaveCommand(user) {
     client.part("#" + user).then(() => {
         ChannelsObject.remove(user);
+        console.log("TEST");
+    });
+}
+
+function matchCommand(chatChannel, user, n) {
+    Check.users(chatChannel, (users) => {
+        let all = DB.match(user);
+        let matches = []
+
+        for (let i = 0; i < all.length; i++) {
+            if (matches.length >= n)
+                break;
+            if (users.indexOf(all[i]) != -1)
+                matches.push(all[i]);
+        }
+
+        if (!matches.length) {
+            client.say(chatChannel, "No other users with a PB are in chat :(");
+            return;
+        }
+
+        let s = matches.map((upb) => {
+            return upb[0] + " (" + commaSeparate(upb[1]) + ")"
+        }).join(", ");
+
+        client.say(chatChannel, "Best matches for " + user + " are " + s);
+
     });
 }
 
@@ -262,7 +289,6 @@ client.on("chat", (chatChannel, user, message, self) => {
     let ch = chatChannel.substring(1);
 
     if (message == "!3" || message == "!321" || message == "!countdown") {
-        console.log("A");
         Check.moderator(chatChannel, user["display-name"], 
         
             () => {
@@ -282,7 +308,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     else if (message == "!pleaseleavemychannel") {
         if (user["display-name"] == ch) {
             client.say(chatChannel, "Byebye! If you want me back, just !summon me again from a channel I'm a part of. o/");
-            client.part(chatChannel);
+            leaveCommand(ch);
         }
         else
             client.say(chatChannel, "This isn't your channel >.>");
@@ -303,9 +329,6 @@ client.on("chat", (chatChannel, user, message, self) => {
         if (u.indexOf(" ") != -1 || parseInt(u))
             return;
         
-            
-        // Regular expressions are ridiculous >.>
-        // This just gives the number thousands comma separators
         let pb = commaSeparate(DB.getValue(u, "pb"));
 
         client.say(chatChannel, u + " has a personal best of " + pb + ".");
@@ -330,8 +353,8 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
     
     else if (message == "!match")
-        client.say(chatChannel, DB.match(user["display-name"], 3));
-    
+        matchCommand(chatChannel, user["display-name"], 3);
+
     else if (message.startsWith("!match ")) {
         let after = message.substring(7).split(" ");
         let u = user["display-name"];
@@ -339,16 +362,17 @@ client.on("chat", (chatChannel, user, message, self) => {
             return;
         
         if (after.length == 1) {
+
+            if (!DB.getValue(u, "pb")) {
+                client.say(chatChannel, u + " : You haven't saved a pb!");
+                return;
+            }
+
             let arg = parseInt(after[0]);
 
             if (arg != NaN) {
                 if (arg > 10) arg = 10;
-                client.say(chatChannel, DB.match(u, arg));
-                return;
-            }
-
-            if (!DB.getValue(u, "pb")) {
-                client.say(chatChannel, u + " : You haven't saved a pb!");
+                matchCommand(chatChannel, u, arg);
                 return;
             }
 
@@ -367,7 +391,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         if (n == NaN)
             return;
         
-        client.say(chatChannel, DB.match(u, n));
+        matchCommand(chatChannel, u, n);
 
     }
     

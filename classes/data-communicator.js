@@ -78,13 +78,10 @@ class DataCommunicator {
 
         pbs = pbs.slice(1, Math.min(n + 1, users.length));
 
-        let s = pbs.map(((pbObject) => {
+        return pbs.map((pbObject) => {
             let u = Object.keys(pbObject)[0];
-            return u + " (" + pbObject[u] +")";
-        })).join(", ");
-        
-
-        return "Best matches for " + user + " are " + s;
+            return [u, pbObject[u]]
+        });
 
     }
 
