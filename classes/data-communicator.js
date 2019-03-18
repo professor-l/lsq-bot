@@ -27,8 +27,6 @@ class DataCommunicator {
             this.addUser(user);
 
         this.data[user]["pb"] = newValue;
-
-        return user + " has a new pb of " + newValue + "!";
     }
 
     addWin(user) {

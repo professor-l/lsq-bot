@@ -8,7 +8,7 @@ const ChannelList = new require("./classes/channel-list");
 
 // Main channel (only channel to accept queueing/moderator commands)
 const channel = process.argv[2].toLowerCase();
-const botName = "lsq_bot";
+const botName = "classictetrisbot";
 
 // Read comma-separated channels file
 // Split by commas
@@ -40,6 +40,10 @@ const options = {
     channels: ChannelsObject.channels.slice()
 };
 
+function commaSeparate(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
+
 const client = new tmi.client(options);
 
 client.connect();
@@ -59,6 +63,12 @@ function summonCommand(user) {
         ChannelsObject.add(user);
     });
     return user + " : this bot has been summoned to your channel!";
+}
+
+function leaveCommand(user) {
+    client.part("#" + user).then(() => {
+        ChannelsObject.remove(user);
+    });
 }
 
 function challengeCommand(challenger, defender) {
@@ -181,7 +191,7 @@ function addAtIndexCommand(message) {
         if (arr[i][0] == "@")
             arr[i] = arr[i].substring(1);
         
-        if (arr[i] == botName) {
+        if (arr[i].toLowerCase() == botName) {
             client.say(channel, "I don't play matches!");
             return;
         }
@@ -266,7 +276,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         );
     }
 
-    if (message == "!summon " + botName)
+    if (message.toLowerCase() == "!summon " + botName)
         client.say(chatChannel, summonCommand(user["display-name"]));
 
     else if (message == "!pleaseleavemychannel") {
@@ -282,7 +292,7 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     else if (message == "!pb") {
         let u = user["display-name"];
-        let pb = DB.getValue(u, "pb");
+        let pb = commaSeparate(DB.getValue(u, "pb"));
         client.say(chatChannel, u + " has a personal best of " + pb + ".");
     }
 
@@ -293,23 +303,30 @@ client.on("chat", (chatChannel, user, message, self) => {
         if (u.indexOf(" ") != -1 || parseInt(u))
             return;
         
-        let pb = DB.getValue(u, "pb") || 0;
-        if (pb)
-            client.say(chatChannel, u + " has a personal best of " + pb + ".");
-        else 
-            client.say(chatChannel, "User \"" + u + "\" has not saved a personal best.");
+            
+        // Regular expressions are ridiculous >.>
+        // This just gives the number thousands comma separators
+        let pb = commaSeparate(DB.getValue(u, "pb"));
+
+        client.say(chatChannel, u + " has a personal best of " + pb + ".");
+
 
     }
     
     else if (message.startsWith("!newpb ")) {
-        let newpb = parseInt(message.substring(7));
-        if (newpb != message.substring(7))
-            return;
+        newpb = parseInt(message.substring(7).replace(/,/g, ""));
+        if (!newpb)
+           client.say(chatChannel, "Invalid PB.");
         
-        if (newpb < 0)
-            client.say("Your PB can't be negative, silly!");
+        else if (newpb < 0)
+            client.say(chatChannel, "Your PB can't be negative, silly!");
+        else if (newpb > 1400000)
+            client.say(chatChannel, "Mmm... I don't think so, @" + user["display-name"]);
         
-        client.say(chatChannel, DB.addPB(user["display-name"], newpb));
+        else {
+            client.say(chatChannel, user["display-name"] + " has a new pb of " + commaSeparate(newpb) + "!");
+            DB.addPB(user["display-name"], newpb);
+        }
     }
     
     else if (message == "!match")
@@ -365,7 +382,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         if (u.indexOf(" ") != -1) return;
         if (u[0] == "@") u = u.substring(1);
 
-        if (u == botName) {
+        if (u.toLowerCase() == botName) {
             client.say(chatChannel, "Oh, me? I've got 999999 wins and no losses. A real maxout!");
             return;
         }
@@ -392,7 +409,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         if (defender[0] == "@")
             defender = defender.substring(1);
 
-        if (defender == botName) {
+        if (defender.toLowerCase() == botName) {
             client.say(channel, "You can't challenge me!");
             return;
         }
