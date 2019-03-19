@@ -302,7 +302,7 @@ client.on("chat", (chatChannel, user, message, self) => {
         );
     }
 
-    if (message.toLowerCase() == "!summon " + botName)
+    if (message.toLowerCase() == "!summon")
         client.say(chatChannel, summonCommand(user["display-name"]));
 
     else if (message == "!pleaseleavemychannel") {

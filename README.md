@@ -22,7 +22,8 @@ LsQ Bot (short for Elle's Queue Bot) is [queueing](https://xkcd.com/853/) bot de
     * `!record <user>` - Prints out the user's record and win percentage. If no user is specified, defaults to you.
   
   * Miscellaneous 
-    * `!summon <bot_name>` - When called by a user from a channel in which the bot already resides, the bot will begin operating in that user's channel as well.
+    * `!summon` - When called by a user from a channel in which the bot already resides, the bot will begin operating in that user's channel as well.
+    * `!pleaseleavemychannel` - If sent by the channel's owner, this command will remove the bot from that channel. It's long to ensure that it's not typed accidentally. This does not prevent the bot from being re-summoned from another channel.
     * `!3` (or `!321`, `!countdown`) - Says 3, 2, 1, Tetris!" in chat, with one second delays. The word "Tetris!" resides in line 273 of `index.js` if you wish to change it.
 
 #### For moderators, the following commands also exist:
