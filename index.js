@@ -80,7 +80,7 @@ function matchCommand(chatChannel, user, n) {
         for (let i = 0; i < all.length; i++) {
             if (matches.length >= n)
                 break;
-            if (users.indexOf(all[i]) != -1)
+            if (users.indexOf(all[i][0]) != -1 && all[i][0] != user)
                 matches.push(all[i]);
         }
 
@@ -338,7 +338,7 @@ client.on("chat", (chatChannel, user, message, self) => {
     
     else if (message.startsWith("!newpb ")) {
         newpb = parseInt(message.substring(7).replace(/,/g, ""));
-        if (!newpb)
+        if (newpb == NaN)
            client.say(chatChannel, "Invalid PB.");
         
         else if (newpb < 0)

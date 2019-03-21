@@ -50,7 +50,7 @@ class DataCommunicator {
         return this.data[user][variable];
     }
 
-    match(user, n) {
+    match(user) {
         let pb = this.getValue(user, "pb");
 
         let pbs = [];
@@ -75,8 +75,6 @@ class DataCommunicator {
                 return 1;
             return 0;
         });
-
-        pbs = pbs.slice(1, Math.min(n + 1, users.length));
 
         return pbs.map((pbObject) => {
             let u = Object.keys(pbObject)[0];
