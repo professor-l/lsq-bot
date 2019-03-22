@@ -74,7 +74,7 @@ class Bracket {
         this.matches.push(m1);
         this.matches.push(m2);
 
-        match.players = [null, null]
+        match.clear();
 
         return [m1, m2];
     }
@@ -83,7 +83,7 @@ class Bracket {
         if (rounds <= 1)
             return;
 
-        let c = this.giveChildren(root, rounds - 1);
+        let c = this.giveChildren(root, rounds - 1, games);
 
         this.generate(c[0], rounds - 1, this.gamesCount[rounds - 2]);
         this.generate(c[1], rounds - 1, this.gamesCount[rounds - 2]);
@@ -126,10 +126,20 @@ class Match {
     }
 
     declareWinner(name, winnerScore, loserScore) {
+        let score = [0, 0];
+
+        for (let i = 0; i < this.games.length; i++) {
+            if (!(this.games[i].winner)) {
+                this.games[i].declareWinner(name, winnerScore, loserScore);
+                score[this.players.indexOf(this.games[i].winner)]++;
+                break;
+            }
+        }
+
         let index;
 
-        if (this.players[0].player == name) index = 0;
-        else if (this.players[1].player == name) index = 1;
+        if (score[0] == (this.games.length + 1) / 2) index = 0;
+        else if (score[1] == (this.games.length + 1) / 2) index = 1;
         else return false;
 
         this.winner = this.players[index];
@@ -138,11 +148,24 @@ class Match {
         this.loser = this.players[(!index) + 0];
         this.loser.score = loserScore;
 
-        let feedTo = (this.parent.players[0] ? 1 : 0);
-      
-        this.parent.players[feedTo] = this.players[index];
+        this.parent.addPlayer(this.winner);
         
         return true;
+    }
+
+    addPlayer(player) {
+
+        let index = this.players[0] ? 1 : 0
+        this.players[index] = player;
+
+        for (let i = 0; i < this.games.length; i++)
+            this.games[i].players[index] = player;
+    }
+
+    clear() {
+        this.players = [null, null];
+        for (let i = 0; i < this.games.length; i++)
+            this.games[i].players = this.players;
     }
     
     isReady() {
@@ -191,12 +214,3 @@ a.addPlayer(new Player("E", 5));
 a.addPlayer(new Player("F", 6));
 a.addPlayer(new Player("G", 7));
 a.addPlayer(new Player("H", 8));
-
-a.bracket.declareWinner("A", 578949, 529834);
-a.bracket.declareWinner("E", 239872, 210842);
-a.bracket.declareWinner("G", 723754, 618723);
-a.bracket.declareWinner("C", 297863, 210823);
-
-a.bracket.declareWinner("A", 2, 1);
-a.bracket.declareWinner("G", 2, 1);
-a.print();
