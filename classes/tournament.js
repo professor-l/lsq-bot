@@ -1,7 +1,7 @@
 class Tournament {
     constructor(rounds) {
         
-        this.bracket = new Bracket([3, 3, 5]);
+        this.bracket = new Bracket(rounds);
 
         for (let i = 0; i < this.bracket.matches.length; i++) {
             let p0 = this.bracket.matches[i].players[0];
@@ -32,16 +32,7 @@ class Tournament {
     }
 
     print() {
-        for (let i = 0; i < this.bracket.matches.length; i++) {
-            let m = this.bracket.matches[i];
-
-            if ( (!(m.players[0] && m.players[1])) || m.winner ) continue;
-
-            let p0 = m.players[0].player + " (" + m.players[0].seed + ")";
-            let p1 = m.players[1].player + " (" + m.players[1].seed + ")";
-
-            console.log("MATCH: " + p0 + " vs. " + p1);
-        }
+        this.bracket.print();
     }
 }
 
@@ -56,9 +47,9 @@ class Bracket {
 
         this.winner = null;
 
-        this.generate(this.final, this.rounds);
+        this.generate(this.final, this.rounds, this.gamesCount[this.rounds - 2]);
     }
-    
+
     giveChildren(match, currentRound, games) {
         let subtractFrom = ((match.players[0].seed + match.players[1].seed - 1) * 2) + 1
 
@@ -95,18 +86,24 @@ class Bracket {
                 continue;
 
             if (this.matches[i].players[0].player == name || this.matches[i].players[1].player == name) {
-                this.matches[i].declareWinner(name, winnerScore, loserScore);
-                if (this.matches[i].round == this.rounds) {
-                    if (this.matches.players[0].player == name)
-                        this.winner = this.matches.players[0];
-                    
-                    else
-                        this.winner = this.matches.players[1];
+                let result = this.matches[i].declareWinner(name, winnerScore, loserScore);
+
+                if (!result[0])
+                    return [false, false];
+
+                if (this.matches[i].round == this.rounds && result[0]) {
+                        this.winner = result[0];
+                        this.loser = result[1];
+                        return result;
                 }
-                break;
             }
         }
         return false;
+    }
+
+    print() {
+        for (let i = 0; i < this.matches.length; i++)
+            this.matches[i].print();
     }
 
 }
@@ -116,6 +113,7 @@ class Match {
         this.parent = parent;
         this.players = players;
         this.round = round;
+        this.score = [0, 0];
 
         this.games = []
         for (let i = 0; i < games; i++)
@@ -126,31 +124,30 @@ class Match {
     }
 
     declareWinner(name, winnerScore, loserScore) {
-        let score = [0, 0];
 
         for (let i = 0; i < this.games.length; i++) {
             if (!(this.games[i].winner)) {
-                this.games[i].declareWinner(name, winnerScore, loserScore);
-                score[this.players.indexOf(this.games[i].winner)]++;
+                let result = this.games[i].declareWinner(name, winnerScore, loserScore);
+
+                let winnerIndex = this.players.indexOf(result[0]);
+                console.log(winnerIndex);
+                this.score[winnerIndex]++
+
+                if (this.score[winnerIndex] == (this.games.length + 1) / 2) {
+                    this.winner = result[0];
+                    this.loser = result[1];
+                }
                 break;
             }
         }
 
-        let index;
+        if (this.winner) {
+            console.log("ADDING");
+            this.parent.addPlayer(this.winner);
+            return [this.winner, this.loser];
+        }
 
-        if (score[0] == (this.games.length + 1) / 2) index = 0;
-        else if (score[1] == (this.games.length + 1) / 2) index = 1;
-        else return false;
-
-        this.winner = this.players[index];
-        this.winner.score = winnerScore || (loserScore + 1);
-
-        this.loser = this.players[(!index) + 0];
-        this.loser.score = loserScore;
-
-        this.parent.addPlayer(this.winner);
-        
-        return true;
+        return [false, false];
     }
 
     addPlayer(player) {
@@ -172,6 +169,19 @@ class Match {
         return (this.players[0] && this.players[1]);
     }
 
+    print() {
+        if (!this.isReady()) {
+            console.log("null vs. null - Round " + this.round + ", " + this.games.length + " games");
+            return;
+        }
+        let p0 = this.players[0].player + "(" + this.players[0].seed + " seed)";
+        let p1 = this.players[1].player + "(" + this.players[1].seed + " seed)";
+        
+        let s = p0 + " vs. " + p1;
+        s += " - Round " + this.round + ", " + this.games.length + " games";
+        console.log(s);
+    }
+
 }
 
 class Game {
@@ -190,9 +200,9 @@ class Game {
 
         if (this.players[0].player == name) this.winner = this.players[0];
         else if (this.players[1].player == name) this.winner = this.players[1];
-        else return false;
+        else return [false, false];
 
-        return this.winner;
+        return [this.winner, this.loser];
     }
 }
 
@@ -205,7 +215,7 @@ class Player {
     }
 }
 
-let a = new Tournament(3);
+let a = new Tournament([3, 3, 5]);
 a.addPlayer(new Player("A", 1));
 a.addPlayer(new Player("B", 2));
 a.addPlayer(new Player("C", 3));
@@ -214,3 +224,10 @@ a.addPlayer(new Player("E", 5));
 a.addPlayer(new Player("F", 6));
 a.addPlayer(new Player("G", 7));
 a.addPlayer(new Player("H", 8));
+
+a.bracket.declareWinner("A", 4, 3);
+a.bracket.declareWinner("A", 3, 2);
+a.bracket.declareWinner("D", 3, 2);
+a.bracket.declareWinner("D", 3, 2);
+
+a.print();
