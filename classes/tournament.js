@@ -214,20 +214,3 @@ class Player {
         this.score = 0
     }
 }
-
-let a = new Tournament([3, 3, 5]);
-a.addPlayer(new Player("A", 1));
-a.addPlayer(new Player("B", 2));
-a.addPlayer(new Player("C", 3));
-a.addPlayer(new Player("D", 4));
-a.addPlayer(new Player("E", 5));
-a.addPlayer(new Player("F", 6));
-a.addPlayer(new Player("G", 7));
-a.addPlayer(new Player("H", 8));
-
-a.bracket.declareWinner("A", 4, 3);
-a.bracket.declareWinner("A", 3, 2);
-a.bracket.declareWinner("D", 3, 2);
-a.bracket.declareWinner("D", 3, 2);
-
-a.print();
