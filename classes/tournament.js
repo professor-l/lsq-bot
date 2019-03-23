@@ -2,6 +2,7 @@ class Tournament {
     constructor(rounds) {
         
         this.bracket = new Bracket(rounds);
+        this.players = [];
 
         for (let i = 0; i < this.bracket.matches.length; i++) {
             let p0 = this.bracket.matches[i].players[0];
@@ -9,7 +10,10 @@ class Tournament {
         }
     }
 
-    addPlayer(player) {
+    addPlayer(player, seed) {
+
+        let p = new Player(player, seed);
+
         for (let i = 0; i < this.bracket.matches.length; i++) {
             if (this.bracket.matches[i].round > 1)
                 continue;
@@ -17,13 +21,15 @@ class Tournament {
             let p0 = this.bracket.matches[i].players[0];
             let p1 = this.bracket.matches[i].players[1];
 
-            if (p0.seed == player.seed) {
-                this.bracket.matches[i].players[0] = player;
+            if (p0.seed == seed) {
+                this.bracket.matches[i].players[0] = p;
+                this.players.push(p);
                 return true;
             }
 
-            else if (p1.seed == player.seed) {
-                this.bracket.matches[i].players[1] = player;
+            else if (p1.seed == seed) {
+                this.bracket.matches[i].players[1] = p;
+                this.players.push(p);
                 return true;
             }
         }
@@ -214,3 +220,5 @@ class Player {
         this.score = 0
     }
 }
+
+module.exports = Tournament;

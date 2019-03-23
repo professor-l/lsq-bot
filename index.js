@@ -5,8 +5,7 @@ const MatchQueue = new require("./classes/match-queue");
 const UserChecker = new require("./classes/user-checker");
 const DataCommunicator = new require("./classes/data-communicator");
 const ChannelList = new require("./classes/channel-list");
-
-// Main channel (only channel to accept queueing/moderator commands)
+const Tournament = new require("./classes/tournament");
 
 
 
@@ -20,8 +19,7 @@ const channel = "classictetrisbottest";
 const botName = channel;
 //const botName = "classictetrisbot";
 
-// Read oath password from file
-const pw = fs.readFileSync("input_files/oathkey-test.txt", "utf8");
+const pw = fs.readFileSync("input_files/oauthkey-test.txt", "utf8");
 // const pw = fs.readFileSync("input_files/oathkey.txt", "utf8");
 
 let ChannelsObject = { "channels": [channel] };
@@ -31,11 +29,15 @@ let ChannelsObject = { "channels": [channel] };
 
 // END DEV-MASTER DISCREPANCY SECTION
 
+
+
 let GlobalQueue = new MatchQueue();
 let Check = new UserChecker(channel);
 let DB = new DataCommunicator("db/data.json", 60000);
+let CurrentTournament = null;
 
 let shoutoutTimeout;
+let tournamentMode = false;
 
 // Options object
 const options = {
@@ -47,7 +49,7 @@ const options = {
         reconnect: true 
     },
     identity: {
-        username: "classictetrisbot",
+        username: botName,
         password: pw
     },
     channels: ChannelsObject.channels.slice()
@@ -292,6 +294,28 @@ function setShoutoutTimeout() {
     shoutoutTimeout = new setTimeout(shoutoutCommand, 60 * 1000 * 3);
 }
 
+
+
+// Tournament commands
+function newTournament(rounds) {
+    CurrentTournament = new Tournament(rounds);
+    return "New tournament created with " + rounds.length + " rounds. Add " + Math.pow(2, rounds.length) + " players.";
+}
+
+function addPlayerToTournament(player, seed) {
+    if (CurrentTournament.players.length == Math.pow(2, CurrentTournament.rounds))
+        return "No new players can be added!";
+    
+    CurrentTournament.addPlayer(player, seed);
+    return "Player " + player + " added (" + seed + " seed)";
+}
+
+
+
+
+
+
+
 client.on("chat", (chatChannel, user, message, self) => {
 
 
@@ -436,6 +460,35 @@ client.on("chat", (chatChannel, user, message, self) => {
     
     else if (ch != channel.toLowerCase())
         return;
+
+    if (tournamentMode) {
+
+        if (message == "!tournamentmodeoff") {
+            tournamentMode = false;
+            client.say(channel, "Tournament mode deactivated. Hope you had fun! :)");
+        }
+
+        if (message.startsWith("!newtournament ")) {
+            let rounds = message.split(" ").slice(1).map((n) => {
+                return parseInt(n);
+            });
+
+            if (rounds.length < 1 || rounds.length > 8) {
+                client.say("You need between 1 and 8 rounds.");
+            }
+
+            for (let i = 0; i < rounds.length; i++) {
+                if (!(rounds[i] % 2)) {
+                    client.say(channel, "Invalid match count for round " + (i + 1) + ".");
+                    return;
+                }
+            }
+
+            client.say(channel, newTournament(rounds));
+        }
+
+        return;
+    }
     
         
     else if (message.startsWith("!challenge ") || message.startsWith("!chal ")) {    
@@ -653,6 +706,13 @@ client.on("chat", (chatChannel, user, message, self) => {
                 client.say(channel, user["display-name"] + " : you are not a moderator.");
             }
         );
+    }
+
+
+
+    else if (message == "!tournamentmodeon") {
+        tournamentMode = true;
+        client.say(channel, "Tournament mode activated! To turn off, type \"!tournamentmodeoff\". This will wipe the current tournament, though, so be careful!");
     }
 
 });
