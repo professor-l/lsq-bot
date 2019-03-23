@@ -7,20 +7,33 @@ const DataCommunicator = new require("./classes/data-communicator");
 const ChannelList = new require("./classes/channel-list");
 
 // Main channel (only channel to accept queueing/moderator commands)
-const channel = process.argv[2].toLowerCase();
-const botName = "classictetrisbot";
 
-// Read comma-separated channels file
-// Split by commas
-// Strip leading/trailing spaces
 
-// Read oath password fromfile
-const pw = fs.readFileSync("input_files/oathkey.txt", "utf8");
+
+// BEGIN DEV-MASTER DISCREPANCY SECTION
+
+
+
+const channel = "classictetrisbottest";
+// const channel = process.argv[2].toLowerCase();
+
+const botName = channel;
+//const botName = "classictetrisbot";
+
+// Read oath password from file
+const pw = fs.readFileSync("input_files/oathkey-test.txt", "utf8");
+// const pw = fs.readFileSync("input_files/oathkey.txt", "utf8");
+
+let ChannelsObject = { "channels": [channel] };
+// let ChannelsObject = new ChannelList("db/channels.txt");
+
+
+
+// END DEV-MASTER DISCREPANCY SECTION
 
 let GlobalQueue = new MatchQueue();
 let Check = new UserChecker(channel);
 let DB = new DataCommunicator("db/data.json", 60000);
-let ChannelsObject = new ChannelList("db/channels.txt");
 
 let shoutoutTimeout;
 
@@ -51,7 +64,6 @@ client.connect();
 // Connected message
 client.on("connected", (address, port) => {
     client.action(channel, "is up and running again!");
-    console.log("Startup successful");
 });
 
 function summonCommand(user) {
