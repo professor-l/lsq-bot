@@ -338,9 +338,9 @@ client.on("chat", (chatChannel, user, message, self) => {
     
     else if (message.startsWith("!newpb ")) {
         newpb = parseInt(message.substring(7).replace(/,/g, ""));
-        if (newpb == NaN)
+        if (newpb != 0 && (!newpb)) {
            client.say(chatChannel, "Invalid PB.");
-        
+        }
         else if (newpb < 0)
             client.say(chatChannel, "Your PB can't be negative, silly!");
         else if (newpb > 1400000)
