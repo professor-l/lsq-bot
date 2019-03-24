@@ -17,7 +17,7 @@ const channel = "classictetrisbottest";
 // const channel = process.argv[2].toLowerCase();
 
 const botName = channel;
-//const botName = "classictetrisbot";
+// const botName = "classictetrisbot";
 
 const pw = fs.readFileSync("input_files/oauthkey-test.txt", "utf8");
 // const pw = fs.readFileSync("input_files/oathkey.txt", "utf8");
@@ -303,11 +303,35 @@ function newTournament(rounds) {
 }
 
 function addPlayerToTournament(player, seed) {
-    if (CurrentTournament.players.length == Math.pow(2, CurrentTournament.rounds))
-        return "No new players can be added!";
+
+    if (!CurrentTournament) return "Create a !newtournament first!";
     
-    CurrentTournament.addPlayer(player, seed);
-    return "Player " + player + " added (" + seed + " seed)";
+    let type = CurrentTournament.addPlayer(player, seed);
+    if (!type) return "Invalid seed."
+
+    if (type == "added") 
+        return "Player " + player + " added (" + seed + " seed)";
+
+        return "Player " + player + " added (" + seed + " seed) - replaced " + type;
+
+}
+
+function addMatchToTournamentQueue(seed0, seed1) {
+    if (!CurrentTournament) return "Create a !newtournament first!";
+
+    if (CurrentTournament.players.length != Math.pow(2, CurrentTournament.bracket.rounds))
+        return "Not enough players to start queueing matches.";
+
+    let added = CurrentTournament.addMatchToQueue(seed0, seed1);
+
+    if (added == parseInt(added))
+        return "Match already queued at index " + added;
+
+    if (added == "no-match")
+        return "No match between seeds " + seed0 + " and " + seed1 + ".";
+
+    return "Match between " + CurrentTournament.getPlayerString(seed0) + " and " + CurrentTournament.getPlayerString(seed1) + " added to queue.";
+
 }
 
 
@@ -463,28 +487,90 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     if (tournamentMode) {
 
-        if (message == "!tournamentmodeoff") {
-            tournamentMode = false;
-            client.say(channel, "Tournament mode deactivated. Hope you had fun! :)");
+        if (message == "!queue" || message == "!q" || message == "!list" || message == "!matches") {
+            let s;
+            if (!CurrentTournament)
+                s = "Ask a moderator to create a !newtournament first!";
+            
+            else
+                s = CurrentTournament.getQueueString();
+
+            client.say(channel, s);
         }
 
-        if (message.startsWith("!newtournament ")) {
-            let rounds = message.split(" ").slice(1).map((n) => {
-                return parseInt(n);
-            });
+        if (message == "!tournamentmodeoff") {
+            Check.moderator(channel, user["display-name"], 
+                () => {
+                    tournamentMode = false;
+                    client.say(channel, "Tournament mode deactivated. Hope you had fun! :)");
+                },
+                () => { return; }
+            );
+        }
 
-            if (rounds.length < 1 || rounds.length > 8) {
-                client.say("You need between 1 and 8 rounds.");
-            }
+        else if (message.startsWith("!newtournament ")) {
+            Check.moderator(channel, user["display-name"], 
+                () => {
+                    let rounds = message.split(" ").slice(1).map((n) => {
+                        return parseInt(n);
+                    });
+        
+                    if (rounds.length < 1 || rounds.length > 8) {
+                        client.say("You need between 1 and 8 rounds.");
+                    }
+        
+                    for (let i = 0; i < rounds.length; i++) {
+                        if (!(rounds[i] % 2)) {
+                            client.say(channel, "Invalid match count for round " + (i + 1) + ".");
+                            return;
+                        }
+                    }
+        
+                    client.say(channel, newTournament(rounds));
+                },
 
-            for (let i = 0; i < rounds.length; i++) {
-                if (!(rounds[i] % 2)) {
-                    client.say(channel, "Invalid match count for round " + (i + 1) + ".");
-                    return;
-                }
-            }
+                () => { return; }
+            );
+        }
 
-            client.say(channel, newTournament(rounds));
+        else if (message.startsWith("!addplayer ")) {
+            Check.moderator(channel, user["display-name"], 
+                () => {
+                    let ps = message.split(" ").slice(1);
+
+                    ps[1] = parseInt(ps[1]);
+
+                    if (ps[0][0] == "@")
+                        ps[0] = ps[0].substring(1);
+
+                    if (!ps[1]) {
+                        client.say(channel, "Invalid seed.");
+                        return;
+                    }
+
+                    client.say(channel, addPlayerToTournament(ps[0], ps[1]));
+                },
+                () => { return; }
+            );
+        }
+
+        else if (message.startsWith("!queuematch ")) {
+            Check.moderator(channel, user["display-name"], 
+                () => {
+
+                    let seeds = message.split(" ").slice(1).map((n) => {
+                        return parseInt(n);
+                    });
+
+                    if (seeds.length != 2 || !seeds[0] || !seeds[1]) {
+                        client.say("Invalid seeds.");
+                        return;
+                    }
+
+                    client.say(channel, addMatchToTournamentQueue(seeds[0], seeds[1]));
+                },
+                () => { return; }
+            );  
         }
 
         return;

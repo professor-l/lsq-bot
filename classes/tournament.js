@@ -4,6 +4,8 @@ class Tournament {
         this.bracket = new Bracket(rounds);
         this.players = [];
 
+        this.queue = [];
+
         for (let i = 0; i < this.bracket.matches.length; i++) {
             let p0 = this.bracket.matches[i].players[0];
             let p1 = this.bracket.matches[i].players[1]
@@ -11,6 +13,9 @@ class Tournament {
     }
 
     addPlayer(player, seed) {
+
+        if (seed < 1 || seed > Math.pow(2, this.bracket.rounds.length))
+            return false;
 
         let p = new Player(player, seed);
 
@@ -21,20 +26,105 @@ class Tournament {
             let p0 = this.bracket.matches[i].players[0];
             let p1 = this.bracket.matches[i].players[1];
 
+            let added = false;
+
             if (p0.seed == seed) {
                 this.bracket.matches[i].players[0] = p;
-                this.players.push(p);
-                return true;
+                added = true;
             }
 
             else if (p1.seed == seed) {
                 this.bracket.matches[i].players[1] = p;
+                added = true;
+            }
+
+            if (added) {
+                for (let i = 0; i < this.players.length; i++) {
+                    if (this.players[i].seed == seed) {
+                        let prev = this.players[i].player;
+                        this.players[i] = p;
+                        return prev;
+                    }
+                }
+
                 this.players.push(p);
-                return true;
+                return "added";
             }
         }
 
         return false;
+    }
+
+    addMatchToQueue(seed0, seed1) {
+        for (let i = 0; i < this.bracket.matches.length; i++) {
+            if (!this.bracket.matches[i].players[1])
+                continue;
+
+            let s0 = this.bracket.matches[i].players[0].seed;
+            let s1 = this.bracket.matches[i].players[1].seed;
+
+            if ((s0 == seed0 && s1 == seed1) || (s0 == seed1 && s1 == seed0)) {
+
+                for (let j = 0; j < this.queue.length; j++) {
+                    s0 = this.queue[j].players[0].seed;
+                    s1 = this.queue[j].players[1].seed;
+
+                    if ((s0 == seed0 && s1 == seed1) || (s0 == seed1 && s1 == seed0)) {
+                        return j + 1;
+                    }
+                }
+
+                this.queue.push(this.bracket.matches[i]);
+
+                return "added";
+            }
+        }
+
+        return "no-match";
+    }
+
+    getPlayerBySeed(seed) {
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].seed == seed) 
+                return this.players[i];
+        }
+
+        return null;
+    }
+
+    getPlayerByName(name) {
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].player == name) 
+                return this.players[i];
+        }
+
+        return null;
+    }
+
+    getPlayerString(seedOrName) {
+        let p = null;
+
+        if (seedOrName == parseInt(seedOrName))
+            p = this.getPlayerBySeed(seedOrName);
+        
+        else
+            p = this.getPlayerByName(seedOrName);
+
+        if (!p)
+            return "";
+
+        return p.string();
+    }
+
+    getQueueString() {
+        if (!this.queue.length)
+            return "No current queue.";
+
+        let strings = this.queue.map((match) => {
+            return match.players[0].string() + " vs. " + match.players[1].string();
+        });
+
+        return "QUEUE: " + strings.join(" ..... ");
     }
 
     print() {
@@ -218,6 +308,10 @@ class Player {
         this.seed = seed || 0;
 
         this.score = 0
+    }
+
+    string() {
+        return this.player + " (" + this.seed + " seed)";
     }
 }
 
