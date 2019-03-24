@@ -288,6 +288,17 @@ client.on("chat", (chatChannel, user, message, self) => {
 
     let ch = chatChannel.substring(1);
 
+
+
+    // JANI
+    if (message == "!jani") {
+        Check.exists(chatChannel, "janutzka", 
+            () => { client.say(chatChannel, "Jani is lurking!"); },
+            () => { client.say(chatChannel, "Jani's not here... :(") }
+        );
+    }
+    // END JANI
+
     if (message == "!3" || message == "!321" || message == "!countdown") {
         Check.moderator(chatChannel, user["display-name"], 
         
