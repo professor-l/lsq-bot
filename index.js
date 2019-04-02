@@ -312,7 +312,7 @@ function addPlayerToTournament(player, seed) {
     if (type == "added") 
         return "Player " + player + " added (" + seed + " seed)";
 
-        return "Player " + player + " added (" + seed + " seed) - replaced " + type;
+    return "Player " + player + " added (" + seed + " seed) - replaced " + type;
 
 }
 
