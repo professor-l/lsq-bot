@@ -50,7 +50,7 @@ client.connect();
 
 // Connected message
 client.on("connected", (address, port) => {
-    client.action(channel, "is up and running again!");
+    // client.action(channel, "is up and running again!");
     console.log("Startup successful");
 });
 
