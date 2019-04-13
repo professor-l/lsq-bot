@@ -299,17 +299,23 @@ client.on("chat", (chatChannel, user, message, self) => {
     }
     // END JANI
 
-    if (message == "!3" || message == "!321" || message == "!countdown") {
-        Check.moderator(chatChannel, user["display-name"], 
-        
+    if (message[0] == "!" && parseInt(message.substring(1))) {
+        let n = parseInt(message.substring(1));
+        if (n < 3 || n > 10) return;
+
+        Check.moderator(chatChannel, user["display-name"],
             () => {
-                setTimeout(() => {client.say(chatChannel, "3")}, 1000);
-                setTimeout(() => {client.say(chatChannel, "2")}, 2000)
-                setTimeout(() => {client.say(chatChannel, "1")}, 3000)
-                setTimeout(() => {client.say(chatChannel, "Tetris!")}, 4000)
+                for (let i = 1; i <= n; i++)
+                    setTimeout(() => { client.say(chatChannel, (n - (i - 1)).toString()) }, i * 1000);
+
+                let say = "Tetris!";
+                if (chatChannel == "classictetris" && Math.random() < 0.06)
+                    say = "Texas!";
+
+                setTimeout(() => { client.say(chatChannel, say) }, (n + 1) * 1000);
             },
-            
-            () => { console.log("B"); return; }
+
+            () => { console.log("..."); }
         );
     }
 
