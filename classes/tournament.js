@@ -184,7 +184,7 @@ class Match {
 
 }
 
-class Game {
+class Game {los
     constructor(players) {
         this.players = players;
         
